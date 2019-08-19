@@ -45,6 +45,11 @@ extension NSManagedObjectContext {
         return managedObjects
     }
 
+    public func delete<T: NSManagedObject>(_: T.Type) throws {
+        let managedObjects = try fetch(T.self)
+        managedObjects.forEach { delete($0) }
+    }
+
     public func entity<T: NSManagedObject>(for _: T.Type) throws -> NSEntityDescription {
         let persistentStoreCoordinator = try nonnullPersistentStoreCoordinator()
         let managedObjectModel = persistentStoreCoordinator.managedObjectModel

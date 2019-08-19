@@ -139,6 +139,37 @@ class NSManagedObjectContextAdditionsTests: XCTestCase {
         )
     }
 
+    func testThatAllEntitiesAreDeletedWhenDeleteIsCalledForGivenType() {
+        let entityCount = 10
+
+        XCTAssertNoThrow(
+            try contextProviderSpy.newBackgroundContext().performAndWait { (context) in
+                try (0..<entityCount).forEach { _ in
+                    let newExampleEntity = try context.create(ExampleEntity.self)
+                    newExampleEntity.uuidString = UUID().uuidString
+                }
+
+                try context.save()
+            }
+        )
+
+        XCTAssertNoThrow(
+            try contextProviderSpy.newBackgroundContext().performAndWait { (context) in
+                let entities = try context.fetch(ExampleEntity.self)
+                XCTAssertEqual(entities.count, entityCount)
+                try context.delete(ExampleEntity.self)
+                try context.save()
+            }
+        )
+
+        XCTAssertNoThrow(
+            try contextProviderSpy.newBackgroundContext().performAndWait { (context) in
+                let entities = try context.fetch(ExampleEntity.self)
+                XCTAssertEqual(entities, [])
+            }
+        )
+    }
+
     func insertExampleEntity(uuidString: String) {
         XCTAssertNoThrow(
             try contextProviderSpy.newBackgroundContext().performAndWait { (context) in
