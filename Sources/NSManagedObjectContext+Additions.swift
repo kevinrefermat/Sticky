@@ -4,6 +4,11 @@ import Foundation
 import CoreData
 
 extension NSManagedObjectContext {
+    enum Error: Swift.Error {
+        case persistentStoreCoordinatorWasNil
+        case modelDoesNotContainEntityWithClassName(String)
+    }
+
     public func performAndWait<T>(block: (NSManagedObjectContext) throws -> T) rethrows -> T {
         let value = try executePerformAndWait(
             block: block,
@@ -13,8 +18,8 @@ extension NSManagedObjectContext {
         return value
     }
 
-    private func executePerformAndWait<T>(block: (NSManagedObjectContext) throws -> T, rescue: ((Error) throws -> (T))) rethrows -> T {
-        var result: Result<T, Error>?
+    private func executePerformAndWait<T>(block: (NSManagedObjectContext) throws -> T, rescue: ((Swift.Error) throws -> (T))) rethrows -> T {
+        var result: Result<T, Swift.Error>?
 
         withoutActuallyEscaping(block) { _block in
             performAndWait {
@@ -31,10 +36,9 @@ extension NSManagedObjectContext {
         }
     }
 
-    public func create<T: NSManagedObject>(_: T.Type) throws -> T {
-        let entity = try self.entity(for: T.self)
-        let managedObject = T(entity: entity, insertInto: self)
-        return managedObject
+    @discardableResult
+    public func create<T: NSManagedObject>(_: T.Type, with presets: Set<Preset<T>> = []) throws -> T {
+        return try T(self, with: presets)
     }
 
     public func fetch<T: NSManagedObject>(_: T.Type, block: ((NSFetchRequest<T>) -> Void)? = nil) throws -> [T] {
@@ -51,34 +55,15 @@ extension NSManagedObjectContext {
     }
 
     public func entity<T: NSManagedObject>(for _: T.Type) throws -> NSEntityDescription {
-        let persistentStoreCoordinator = try nonnullPersistentStoreCoordinator()
+        guard let persistentStoreCoordinator = persistentStoreCoordinator else {
+            throw Error.persistentStoreCoordinatorWasNil
+        }
+
         let managedObjectModel = persistentStoreCoordinator.managedObjectModel
         let className = String(reflecting: T.self)
-        let entity = try nonnullEntity(for: className, in: managedObjectModel)
-        return entity
-    }
-
-    private func nonnullPersistentStoreCoordinator() throws -> NSPersistentStoreCoordinator {
-        enum Error: Swift.Error {
-            case mustHaveNonnullPersistentStoreCoordinator
-        }
-
-        guard let persistentStoreCoordinator = persistentStoreCoordinator else {
-            throw Error.mustHaveNonnullPersistentStoreCoordinator
-        }
-
-        return persistentStoreCoordinator
-    }
-
-    private func nonnullEntity(for className: String, in managedObjectModel: NSManagedObjectModel) throws -> NSEntityDescription {
-        enum Error: Swift.Error {
-            case modelDoesNotHaveEntityWithClassName(String)
-        }
-
         guard let entity = managedObjectModel.entities.first(where: { $0.managedObjectClassName == className }) else {
-            throw Error.modelDoesNotHaveEntityWithClassName(className)
+            throw Error.modelDoesNotContainEntityWithClassName(className)
         }
-
         return entity
     }
 }

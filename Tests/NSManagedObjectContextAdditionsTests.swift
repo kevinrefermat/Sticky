@@ -139,6 +139,23 @@ class NSManagedObjectContextAdditionsTests: XCTestCase {
         )
     }
 
+    func testPresetValues() {
+        let uuidString = UUID().uuidString
+        XCTAssertNoThrow(
+            try contextProviderSpy.newBackgroundContext().performAndWait { (context) in
+                try context.create(ExampleEntity.self, with: [Preset(key: \.uuidString, value: uuidString)])
+                try context.save()
+            }
+        )
+
+        XCTAssertNoThrow(
+            try contextProviderSpy.newBackgroundContext().performAndWait { (context) in
+                let entities = try context.fetch(ExampleEntity.self)
+                XCTAssertEqual(entities.map { $0.uuidString }, [uuidString])
+            }
+        )
+    }
+
     func testThatAllEntitiesAreDeletedWhenDeleteIsCalledForGivenType() {
         let entityCount = 10
 
