@@ -4,8 +4,8 @@ import Foundation
 import CoreData
 
 extension NSPersistentContainer {
-    static func preloadedInMemoryDouble(for owner: Any) -> Self {
-        let nsPersistentContainer = self.init(name: "\(String(describing: type(of: owner)))DB", managedObjectModel: .singleEntityModel)
+    static func preloadedInMemoryDouble(name: String, managedObjectModel: NSManagedObjectModel) -> Self {
+        let nsPersistentContainer = self.init(name: name, managedObjectModel: managedObjectModel)
         nsPersistentContainer.replacePersistentStoreDescriptionsWithSingleInMemoryDescription()
         NSPersistentContainerLoader().syncLoad(nsPersistentContainer: nsPersistentContainer)
         return nsPersistentContainer

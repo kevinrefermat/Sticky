@@ -5,7 +5,7 @@ import CoreData
 
 public final class PersistentContainerDouble: PersistentContainerProtocol {
     public var state: PersistentContainer.State = .reset
-    public var startResult: Result<PersistentContainer.ContextProvider, Error> = .success(.testDouble())
+    public var startResult: Result<PersistentContainer.ContextProvider, Error> = .success(.testDouble(name: "PersistentContainerDoubleDB"))
     public var shouldAutoCallCompletion = false
 
     public init() {}

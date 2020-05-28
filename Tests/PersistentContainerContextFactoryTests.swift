@@ -15,7 +15,7 @@ class PersistentContainerContextProviderTests: XCTestCase {
     override func setUp() {
         super.setUp()
 
-        nsPersistentContainer = NSPersistentContainer.preloadedInMemoryDouble(for: self)
+        nsPersistentContainer = NSPersistentContainer.preloadedInMemoryDouble(name: "", managedObjectModel: .singleEntityModel)
         nsPersistentContainerSpy = NSPersistentContainer.Spy(nsPersistentContainer: nsPersistentContainer)
     }
 

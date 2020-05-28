@@ -5,26 +5,22 @@ import CoreData
 
 extension PersistentContainer {
     public class ContextProvider {
-        private let nsPersistentContainer: NSPersistentContainerProtocol?
-        private var fatalNSPersistentContainer: NSPersistentContainerProtocol {
-            guard let nsPersistentContainer = nsPersistentContainer else { fatalError("methods on testDouble() are not functional") }
-            return nsPersistentContainer
-        }
+        private let nsPersistentContainer: NSPersistentContainerProtocol
 
         required init(nsPersistentContainer: NSPersistentContainerProtocol) {
             self.nsPersistentContainer = nsPersistentContainer
         }
 
-        public static func testDouble() -> Self {
-            return self.init(nsPersistentContainer: NSPersistentContainer.preloadedInMemoryDouble(for: self))
+        public static func testDouble(name: String) -> Self {
+            return self.init(nsPersistentContainer: NSPersistentContainer.preloadedInMemoryDouble(name: name, managedObjectModel: .init()))
         }
 
         public var viewContext: NSManagedObjectContext {
-            return fatalNSPersistentContainer.viewContext
+            return nsPersistentContainer.viewContext
         }
 
         public func newBackgroundContext() -> NSManagedObjectContext {
-            return fatalNSPersistentContainer.newBackgroundContext()
+            return nsPersistentContainer.newBackgroundContext()
         }
     }
 }
