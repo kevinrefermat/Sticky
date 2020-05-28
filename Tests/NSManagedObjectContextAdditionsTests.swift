@@ -10,7 +10,7 @@ class NSManagedObjectContextAdditionsTests: XCTestCase {
     override func setUp() {
         super.setUp()
 
-        let nsPersistentContainer = NSPersistentContainer.preloadedInMemoryDouble(for: self)
+        let nsPersistentContainer = NSPersistentContainer.preloadedInMemoryDouble(name: "NSManagedObjectContextAdditionsTestsDB", managedObjectModel: .singleEntityModel)
         contextProviderSpy = PersistentContainer.ContextProviderSpy(nsPersistentContainer: nsPersistentContainer)
     }
 
