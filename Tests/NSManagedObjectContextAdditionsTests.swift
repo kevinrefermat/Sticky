@@ -187,6 +187,33 @@ class NSManagedObjectContextAdditionsTests: XCTestCase {
         )
     }
 
+    func testThatSelectedEntitiesAreDeletedWhenDeleteIsCalledForGivenTypeWithSpecificCriteria() {
+        let uuidA = UUID()
+        let uuidB = UUID()
+
+        XCTAssertNoThrow(
+            try contextProviderSpy.newBackgroundContext().performAndWait { (context) in
+                try context.create(ExampleEntity.self, with: [Preset(key: \.uuidString, value: uuidA.uuidString)])
+                try context.create(ExampleEntity.self, with: [Preset(key: \.uuidString, value: uuidB.uuidString)])
+                try context.save()
+            }
+        )
+
+        XCTAssertNoThrow(
+            try contextProviderSpy.newBackgroundContext().performAndWait { (context) in
+                try context.delete(ExampleEntity.self, isDeleted: { $0.uuidString == uuidA.uuidString })
+                try context.save()
+            }
+        )
+
+        XCTAssertNoThrow(
+            try contextProviderSpy.newBackgroundContext().performAndWait { (context) in
+                let entities = try context.fetch(ExampleEntity.self)
+                XCTAssertEqual(entities.map { $0.uuidString }, [uuidB.uuidString])
+            }
+        )
+    }
+
     func insertExampleEntity(uuidString: String) {
         XCTAssertNoThrow(
             try contextProviderSpy.newBackgroundContext().performAndWait { (context) in
