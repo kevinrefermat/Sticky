@@ -10,7 +10,7 @@ class NSManagedObjectAdditionsTests: XCTestCase {
     override func setUp() {
         super.setUp()
 
-        nsPersistentContainer = NSPersistentContainer.preloadedInMemoryDouble(name: "", managedObjectModel: .singleEntityModel)
+        nsPersistentContainer = NSPersistentContainer.preloadedInMemoryDouble(name: "NSManagedObjectAdditionsTestsDB", managedObjectModel: .singleEntityModel)
     }
 
     func testThatInitializerProducesAnObjectThatSavesSuccessfully() {
