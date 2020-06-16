@@ -92,4 +92,20 @@ open class PersistentContainer: PersistentContainerProtocol {
             }
         }
     }
+
+    public func dropDatabasesOnDisk() throws {
+        guard case .reset = state else { return }
+
+        let urls = nsPersistentContainer.persistentStoreDescriptions
+            .filter { $0.type != NSInMemoryStoreType }
+            .compactMap { $0.url }
+
+        for url in urls {
+            try FileManager.default.removeItem(at: url)
+            let writeAheadLogURL = url.appendingPathComponent("-wal")
+            try FileManager.default.removeItem(at: writeAheadLogURL)
+            let writeAheadLogIndexURL = url.appendingPathComponent("-shm")
+            try FileManager.default.removeItem(at: writeAheadLogIndexURL)
+        }
+    }
 }
