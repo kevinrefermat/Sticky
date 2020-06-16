@@ -44,17 +44,40 @@ extension NSManagedObjectContext {
     public func fetch<T: NSManagedObject>(_: T.Type, block: ((NSFetchRequest<T>) -> Void)? = nil) throws -> [T] {
         let request = NSFetchRequest<T>()
         block?(request)
-        request.entity = try self.entity(for: T.self)
+        request.entity = try entity(for: T.self)
         let managedObjects = try fetch(request) as [T]
         return managedObjects
     }
 
-    public func delete<T: NSManagedObject>(_: T.Type, isDeleted: (T) -> Bool = { _ in true }) throws {
-        let managedObjects = try fetch(T.self)
-        managedObjects.forEach {
-            if isDeleted($0) {
-                delete($0)
+    public func delete<T: NSManagedObject>(_: T.Type, isDeleted: ((T) -> Bool)? = nil) throws {
+        if let isDeleted = isDeleted {
+            let managedObjects = try fetch(T.self)
+            managedObjects.forEach {
+                if isDeleted($0) {
+                    delete($0)
+                }
             }
+        } else {
+            try deleteAll(T.self)
+        }
+    }
+
+    public func deleteAll<T: NSManagedObject>(_: T.Type) throws {
+        guard let persistentStoreCoordinator = persistentStoreCoordinator else { fatalError() }
+
+        let hasInMemoryStore = persistentStoreCoordinator.persistentStores.contains(where: { $0.type == NSInMemoryStoreType })
+
+        if hasInMemoryStore {
+            try delete(T.self, isDeleted: { _ in true })
+        } else {
+            let fetchRequest: NSFetchRequest<NSFetchRequestResult> = NSFetchRequest()
+            fetchRequest.entity = try entity(for: T.self)
+            let deleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
+            deleteRequest.resultType = .resultTypeObjectIDs
+            guard let batchDeleteResult = try persistentStoreCoordinator.execute(deleteRequest, with: self) as? NSBatchDeleteResult else { fatalError() }
+            guard let deletedObjectIDs = batchDeleteResult.result as? [NSManagedObjectID] else { fatalError() }
+            let changes: [AnyHashable : Any] = [NSDeletedObjectsKey : deletedObjectIDs]
+            NSManagedObjectContext.mergeChanges(fromRemoteContextSave: changes, into: [self])
         }
     }
 
