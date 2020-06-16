@@ -102,9 +102,17 @@ open class PersistentContainer: PersistentContainerProtocol {
 
         for url in urls {
             try FileManager.default.removeItem(at: url)
-            let writeAheadLogURL = url.appendingPathExtension("-wal")
+
+            var writeAheadLogURL = url
+            let writeAheadLogFileName = url.lastPathComponent + "-wal"
+            writeAheadLogURL.deleteLastPathComponent()
+            writeAheadLogURL.appendPathComponent(writeAheadLogFileName)
             try FileManager.default.removeItem(at: writeAheadLogURL)
-            let writeAheadLogIndexURL = url.appendingPathExtension("-shm")
+
+            var writeAheadLogIndexURL = url
+            let writeAheadLogIndexFileName = url.lastPathComponent + "-shm"
+            writeAheadLogIndexURL.deleteLastPathComponent()
+            writeAheadLogIndexURL.appendPathComponent(writeAheadLogIndexFileName)
             try FileManager.default.removeItem(at: writeAheadLogIndexURL)
         }
     }
