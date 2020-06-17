@@ -5,7 +5,6 @@ import CoreData
 @testable import Sticky
 
 class PersistentContainerTests: XCTestCase {
-    var databaseFileName: String { return "\(type(of: self))DB" }
     var nsPersistentContainer: NSPersistentContainer!
     var nsPersistentContainerSpy: NSPersistentContainer.Spy!
 
@@ -14,7 +13,7 @@ class PersistentContainerTests: XCTestCase {
     override func setUp() {
         super.setUp()
 
-        nsPersistentContainer = NSPersistentContainer(name: databaseFileName, managedObjectModel: .singleEntityModel)
+        nsPersistentContainer = NSPersistentContainer(name: "\(type(of: self))DB", managedObjectModel: .singleEntityModel)
         nsPersistentContainerSpy = NSPersistentContainer.Spy(nsPersistentContainer: nsPersistentContainer)
     }
 
