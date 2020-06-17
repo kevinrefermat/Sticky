@@ -43,6 +43,7 @@ open class PersistentContainer: PersistentContainerProtocol {
         }
     }
 
+    @discardableResult
     public func start() throws -> ContextProvider {
         try resetToLoading()
 
