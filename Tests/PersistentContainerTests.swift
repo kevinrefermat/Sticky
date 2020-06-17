@@ -219,7 +219,7 @@ class PersistentContainerTests: XCTestCase {
         XCTAssertNotEqual(nsPersistentContainer.persistentStoreDescriptions.map { $0.type }, [NSInMemoryStoreType])
     }
 
-    func testThatDeleteSQLiteStoresRemovesDatabaseFilesWhenCalledBeforeSUTStarted() throws {
+    func testThatDeleteSQLiteStoresRemovesDatabaseFilesWhenCalledAfterSUTStarts() throws {
         resetSUT(inMemory: false, preloaded: false)
 
         try sut.deleteSQLLiteStores()
@@ -234,7 +234,7 @@ class PersistentContainerTests: XCTestCase {
         XCTAssertFalse(filesExist(for: nsPersistentContainer.persistentStoreDescriptions))
     }
 
-    func testThatDeleteSQLiteStoresRemovesDatabase() throws {
+    func testThatDeleteSQLiteStoresRemovesDatabasesBeforeSUTStarts() throws {
         resetSUT(inMemory: false, preloaded: false)
 
         try sut.deleteSQLLiteStores()
