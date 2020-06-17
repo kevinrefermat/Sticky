@@ -104,16 +104,10 @@ open class PersistentContainer: PersistentContainerProtocol {
             for url in urls {
                 try deleteFileIfExists(at: url)
 
-                var writeAheadLogURL = url
-                let writeAheadLogFileName = url.lastPathComponent + "-wal"
-                writeAheadLogURL.deleteLastPathComponent()
-                writeAheadLogURL.appendPathComponent(writeAheadLogFileName)
+                let writeAheadLogURL = url.appendingToLastPathComponent("-wal")
                 try deleteFileIfExists(at: writeAheadLogURL)
 
-                var writeAheadLogIndexURL = url
-                let writeAheadLogIndexFileName = url.lastPathComponent + "-shm"
-                writeAheadLogIndexURL.deleteLastPathComponent()
-                writeAheadLogIndexURL.appendPathComponent(writeAheadLogIndexFileName)
+                let writeAheadLogIndexURL = url.appendingToLastPathComponent("-shm")
                 try deleteFileIfExists(at: writeAheadLogIndexURL)
             }
         }

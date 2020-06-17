@@ -255,16 +255,8 @@ class PersistentContainerTests: XCTestCase {
         var paths = [String]()
 
         for url in persistentStoreDescriptions.compactMap({ $0.url }) {
-            var writeAheadLogURL = url
-            let writeAheadLogFileName = url.lastPathComponent + "-wal"
-            writeAheadLogURL.deleteLastPathComponent()
-            writeAheadLogURL.appendPathComponent(writeAheadLogFileName)
-
-            var writeAheadLogIndexURL = url
-            let writeAheadLogIndexFileName = url.lastPathComponent + "-shm"
-            writeAheadLogIndexURL.deleteLastPathComponent()
-            writeAheadLogIndexURL.appendPathComponent(writeAheadLogIndexFileName)
-
+            let writeAheadLogURL = url.appendingToLastPathComponent("-wal")
+            let writeAheadLogIndexURL = url.appendingToLastPathComponent("-shm")
             paths += [url.path, writeAheadLogURL.path, writeAheadLogIndexURL.path]
         }
 
