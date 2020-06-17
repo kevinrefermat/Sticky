@@ -5,6 +5,7 @@ import CoreData
 @testable import Sticky
 
 class PersistentContainerTests: XCTestCase {
+    var databaseFileName: String { return "\(type(of: self))DB" }
     var nsPersistentContainer: NSPersistentContainer!
     var nsPersistentContainerSpy: NSPersistentContainer.Spy!
 
@@ -13,12 +14,14 @@ class PersistentContainerTests: XCTestCase {
     override func setUp() {
         super.setUp()
 
-        nsPersistentContainer = NSPersistentContainer(name: "\(type(of: self))DB", managedObjectModel: .singleEntityModel)
+        nsPersistentContainer = NSPersistentContainer(name: databaseFileName, managedObjectModel: .singleEntityModel)
         nsPersistentContainerSpy = NSPersistentContainer.Spy(nsPersistentContainer: nsPersistentContainer)
     }
 
-    func resetSUT(preloaded: Bool = false) {
-        nsPersistentContainer.replacePersistentStoreDescriptionsWithSingleInMemoryDescription()
+    func resetSUT(inMemory: Bool = true, preloaded: Bool = false) {
+        if inMemory {
+            nsPersistentContainer.replacePersistentStoreDescriptionsWithSingleInMemoryDescription()
+        }
 
         sut = PersistentContainer(nsPersistentContainer: nsPersistentContainerSpy)
 
@@ -215,5 +218,66 @@ class PersistentContainerTests: XCTestCase {
         waitForExpectations(timeout: 1)
 
         XCTAssertNotEqual(nsPersistentContainer.persistentStoreDescriptions.map { $0.type }, [NSInMemoryStoreType])
+    }
+
+    func testThatDeleteSQLiteStoresRemovesDatabaseFilesWhenCalledBeforeSUTStarted() throws {
+        resetSUT(inMemory: false, preloaded: false)
+
+        try sut.deleteSQLLiteStores()
+        XCTAssertFalse(filesExist(for: nsPersistentContainer.persistentStoreDescriptions))
+
+        try sut.start()
+        XCTAssertTrue(filesExist(for: nsPersistentContainer.persistentStoreDescriptions))
+
+        XCTAssertThrowsError(try sut.deleteSQLLiteStores()) { (error) in
+            guard case PersistentContainer.Error.reinitializationRequired = error else { XCTFail(); return }
+        }
+        XCTAssertFalse(filesExist(for: nsPersistentContainer.persistentStoreDescriptions))
+    }
+
+    func testThatDeleteSQLiteStoresRemovesDatabase() throws {
+        resetSUT(inMemory: false, preloaded: false)
+
+        try sut.deleteSQLLiteStores()
+        XCTAssertFalse(filesExist(for: nsPersistentContainer.persistentStoreDescriptions))
+
+        try sut.start()
+        XCTAssertTrue(filesExist(for: nsPersistentContainer.persistentStoreDescriptions))
+
+        resetSUT(inMemory: false, preloaded: false)
+        XCTAssertTrue(filesExist(for: nsPersistentContainer.persistentStoreDescriptions))
+
+        try sut.deleteSQLLiteStores()
+        XCTAssertFalse(filesExist(for: nsPersistentContainer.persistentStoreDescriptions))
+    }
+
+    func paths(for persistentStoreDescriptions: [NSPersistentStoreDescription]) -> [String] {
+        var paths = [String]()
+
+        for url in persistentStoreDescriptions.compactMap({ $0.url }) {
+            var writeAheadLogURL = url
+            let writeAheadLogFileName = url.lastPathComponent + "-wal"
+            writeAheadLogURL.deleteLastPathComponent()
+            writeAheadLogURL.appendPathComponent(writeAheadLogFileName)
+
+            var writeAheadLogIndexURL = url
+            let writeAheadLogIndexFileName = url.lastPathComponent + "-shm"
+            writeAheadLogIndexURL.deleteLastPathComponent()
+            writeAheadLogIndexURL.appendPathComponent(writeAheadLogIndexFileName)
+
+            paths += [url.path, writeAheadLogURL.path, writeAheadLogIndexURL.path]
+        }
+
+        return paths
+    }
+
+    func filesExist(for descriptions: [NSPersistentStoreDescription]) -> Bool {
+        var filesExist = false
+
+        for path in paths(for: descriptions) {
+            filesExist = filesExist || FileManager.default.fileExists(atPath: path)
+        }
+
+        return filesExist
     }
 }

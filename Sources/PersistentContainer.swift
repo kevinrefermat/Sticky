@@ -94,37 +94,43 @@ open class PersistentContainer: PersistentContainerProtocol {
     }
 
     public func deleteSQLLiteStores() throws {
-        let persistentStoreDescriptions = nsPersistentContainer.persistentStoreDescriptions
-            .filter { $0.type == NSSQLiteStoreType }
-        let urls = persistentStoreDescriptions.compactMap { $0.url }
+        func deleteFileIfExists(at url: URL) throws {
+            if FileManager.default.fileExists(atPath: url.path) {
+                try FileManager.default.removeItem(atPath: url.path)
+            }
+        }
 
-        switch state {
-        case .reset, .failedToLoad:
+        func deleteDatabaseFiles(for urls: [URL]) throws {
             for url in urls {
-                try FileManager.default.removeItem(at: url)
+                try deleteFileIfExists(at: url)
 
                 var writeAheadLogURL = url
                 let writeAheadLogFileName = url.lastPathComponent + "-wal"
                 writeAheadLogURL.deleteLastPathComponent()
                 writeAheadLogURL.appendPathComponent(writeAheadLogFileName)
-                try FileManager.default.removeItem(at: writeAheadLogURL)
+                try deleteFileIfExists(at: writeAheadLogURL)
 
                 var writeAheadLogIndexURL = url
                 let writeAheadLogIndexFileName = url.lastPathComponent + "-shm"
                 writeAheadLogIndexURL.deleteLastPathComponent()
                 writeAheadLogIndexURL.appendPathComponent(writeAheadLogIndexFileName)
-                try FileManager.default.removeItem(at: writeAheadLogIndexURL)
+                try deleteFileIfExists(at: writeAheadLogIndexURL)
             }
+        }
+
+        let urls = nsPersistentContainer.persistentStoreDescriptions
+            .filter { $0.type == NSSQLiteStoreType }
+            .compactMap { $0.url }
+
+        switch state {
         case .loading:
             throw PersistentContainer.Error.cannotDeleteSQLLiteStoresWhileLoading
         case .loaded:
-            try nsPersistentContainer.persistentStoreCoordinator.persistentStores
-                .filter({
-                    guard let url = $0.url else { return false }
-                    return urls.contains(url)
-                })
-                .forEach { try nsPersistentContainer.persistentStoreCoordinator.remove($0) }
-            throw PersistentContainer.Error.restartRequired
+            try urls.forEach { try nsPersistentContainer.persistentStoreCoordinator.destroyPersistentStore(at: $0, ofType: NSSQLiteStoreType) }
+            try deleteDatabaseFiles(for: urls)
+            throw PersistentContainer.Error.reinitializationRequired
+        case .reset, .failedToLoad:
+            try deleteDatabaseFiles(for: urls)
         }
     }
 }

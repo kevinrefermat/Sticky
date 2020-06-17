@@ -8,6 +8,6 @@ extension PersistentContainer {
         case failedToLoadPersistentStores([NSPersistentStoreDescription: Swift.Error])
         case invalidStateToCallStartFrom(PersistentContainer.State)
         case cannotDeleteSQLLiteStoresWhileLoading
-        case restartRequired
+        case reinitializationRequired
     }
 }
