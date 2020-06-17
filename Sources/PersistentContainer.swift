@@ -11,15 +11,17 @@ public protocol PersistentContainerProtocol {
 
 open class PersistentContainer: PersistentContainerProtocol {
     private let nsPersistentContainer: NSPersistentContainerProtocol
+    private let fileManager: FileManagerProtocol
     private let loader = NSPersistentContainerLoader()
     private let inMemory: Bool
 
-    init(nsPersistentContainer: NSPersistentContainerProtocol, inMemory: Bool = false) {
+    init(nsPersistentContainer: NSPersistentContainerProtocol, inMemory: Bool = false, fileManager: FileManagerProtocol = FileManager.default) {
         self.nsPersistentContainer = nsPersistentContainer
+        self.fileManager = fileManager
         self.inMemory = inMemory
     }
 
-    public convenience init(name: String, managedObjectModel: NSManagedObjectModel? = nil, inMemory: Bool = false) {
+    public convenience init(name: String, managedObjectModel: NSManagedObjectModel? = nil, inMemory: Bool = false, fileManager: FileManagerProtocol = FileManager.default) {
         let nsPersistentContainer: NSPersistentContainer = {
             if let managedObjectModel = managedObjectModel {
                 return NSPersistentContainer(name: name, managedObjectModel: managedObjectModel)
@@ -27,7 +29,7 @@ open class PersistentContainer: PersistentContainerProtocol {
                 return NSPersistentContainer(name: name)
             }
         }()
-        self.init(nsPersistentContainer: nsPersistentContainer, inMemory: inMemory)
+        self.init(nsPersistentContainer: nsPersistentContainer, inMemory: inMemory, fileManager: fileManager)
     }
 
     private let _state = Atomic(State.reset)
@@ -90,6 +92,41 @@ open class PersistentContainer: PersistentContainerProtocol {
                 self._state.value = .loaded(contextProvider)
                 completion(.success(contextProvider))
             }
+        }
+    }
+
+    public func deleteSQLLiteStores() throws {
+        func deleteFileIfExists(at url: URL) throws {
+            if fileManager.fileExists(atPath: url.path) {
+                try fileManager.removeItem(atPath: url.path)
+            }
+        }
+
+        func deleteDatabaseFiles(for urls: [URL]) throws {
+            for url in urls {
+                try deleteFileIfExists(at: url)
+
+                let writeAheadLogURL = url.appendingToLastPathComponent("-wal")
+                try deleteFileIfExists(at: writeAheadLogURL)
+
+                let writeAheadLogIndexURL = url.appendingToLastPathComponent("-shm")
+                try deleteFileIfExists(at: writeAheadLogIndexURL)
+            }
+        }
+
+        let urls = nsPersistentContainer.persistentStoreDescriptions
+            .filter { $0.type == NSSQLiteStoreType }
+            .compactMap { $0.url }
+
+        switch state {
+        case .loading:
+            throw PersistentContainer.Error.cannotDeleteSQLLiteStoresWhileLoading
+        case .loaded:
+            try urls.forEach { try nsPersistentContainer.persistentStoreCoordinator.destroyPersistentStore(at: $0, ofType: NSSQLiteStoreType) }
+            try deleteDatabaseFiles(for: urls)
+            throw PersistentContainer.Error.reinitializationRequired
+        case .reset, .failedToLoad:
+            try deleteDatabaseFiles(for: urls)
         }
     }
 }

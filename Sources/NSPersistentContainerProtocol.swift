@@ -4,6 +4,8 @@ import Foundation
 import CoreData
 
 protocol NSPersistentContainerProtocol: class {
+    var persistentStoreCoordinator: NSPersistentStoreCoordinator { get }
+
     var persistentStoreDescriptions: [NSPersistentStoreDescription] { get set }
 
     func loadPersistentStores(completionHandler block: @escaping (NSPersistentStoreDescription, Error?) -> Void)
