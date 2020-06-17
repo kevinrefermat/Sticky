@@ -11,17 +11,17 @@ public protocol PersistentContainerProtocol {
 
 open class PersistentContainer: PersistentContainerProtocol {
     private let nsPersistentContainer: NSPersistentContainerProtocol
-    private let fileManager: FileManager
+    private let fileManager: FileManagerProtocol
     private let loader = NSPersistentContainerLoader()
     private let inMemory: Bool
 
-    init(nsPersistentContainer: NSPersistentContainerProtocol, inMemory: Bool = false, fileManager: FileManager = .default) {
+    init(nsPersistentContainer: NSPersistentContainerProtocol, inMemory: Bool = false, fileManager: FileManagerProtocol = FileManager.default) {
         self.nsPersistentContainer = nsPersistentContainer
         self.fileManager = fileManager
         self.inMemory = inMemory
     }
 
-    public convenience init(name: String, managedObjectModel: NSManagedObjectModel? = nil, inMemory: Bool = false, fileManager: FileManager = .default) {
+    public convenience init(name: String, managedObjectModel: NSManagedObjectModel? = nil, inMemory: Bool = false, fileManager: FileManagerProtocol = FileManager.default) {
         let nsPersistentContainer: NSPersistentContainer = {
             if let managedObjectModel = managedObjectModel {
                 return NSPersistentContainer(name: name, managedObjectModel: managedObjectModel)
