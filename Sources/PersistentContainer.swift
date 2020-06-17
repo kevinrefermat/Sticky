@@ -93,27 +93,38 @@ open class PersistentContainer: PersistentContainerProtocol {
         }
     }
 
-    public func dropDatabasesOnDisk() throws {
-        guard case .reset = state else { return }
+    public func deleteSQLLiteStores() throws {
+        let persistentStoreDescriptions = nsPersistentContainer.persistentStoreDescriptions
+            .filter { $0.type == NSSQLiteStoreType }
+        let urls = persistentStoreDescriptions.compactMap { $0.url }
 
-        let urls = nsPersistentContainer.persistentStoreDescriptions
-            .filter { $0.type != NSInMemoryStoreType }
-            .compactMap { $0.url }
+        switch state {
+        case .reset, .failedToLoad:
+            for url in urls {
+                try FileManager.default.removeItem(at: url)
 
-        for url in urls {
-            try FileManager.default.removeItem(at: url)
+                var writeAheadLogURL = url
+                let writeAheadLogFileName = url.lastPathComponent + "-wal"
+                writeAheadLogURL.deleteLastPathComponent()
+                writeAheadLogURL.appendPathComponent(writeAheadLogFileName)
+                try FileManager.default.removeItem(at: writeAheadLogURL)
 
-            var writeAheadLogURL = url
-            let writeAheadLogFileName = url.lastPathComponent + "-wal"
-            writeAheadLogURL.deleteLastPathComponent()
-            writeAheadLogURL.appendPathComponent(writeAheadLogFileName)
-            try FileManager.default.removeItem(at: writeAheadLogURL)
-
-            var writeAheadLogIndexURL = url
-            let writeAheadLogIndexFileName = url.lastPathComponent + "-shm"
-            writeAheadLogIndexURL.deleteLastPathComponent()
-            writeAheadLogIndexURL.appendPathComponent(writeAheadLogIndexFileName)
-            try FileManager.default.removeItem(at: writeAheadLogIndexURL)
+                var writeAheadLogIndexURL = url
+                let writeAheadLogIndexFileName = url.lastPathComponent + "-shm"
+                writeAheadLogIndexURL.deleteLastPathComponent()
+                writeAheadLogIndexURL.appendPathComponent(writeAheadLogIndexFileName)
+                try FileManager.default.removeItem(at: writeAheadLogIndexURL)
+            }
+        case .loading:
+            throw PersistentContainer.Error.cannotDeleteSQLLiteStoresWhileLoading
+        case .loaded:
+            try nsPersistentContainer.persistentStoreCoordinator.persistentStores
+                .filter({
+                    guard let url = $0.url else { return false }
+                    return urls.contains(url)
+                })
+                .forEach { try nsPersistentContainer.persistentStoreCoordinator.remove($0) }
+            throw PersistentContainer.Error.restartRequired
         }
     }
 }
