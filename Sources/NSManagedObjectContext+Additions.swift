@@ -65,6 +65,7 @@ extension NSManagedObjectContext {
 
         if hasInMemoryStore {
             try delete(T.self, isDeleted: { _ in true })
+            try save()  
         } else {
             let fetchRequest: NSFetchRequest<NSFetchRequestResult> = NSFetchRequest()
             fetchRequest.entity = try entity(for: T.self)
