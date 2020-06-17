@@ -58,7 +58,7 @@ extension NSManagedObjectContext {
         }
     }
 
-    public func deleteAll<T: NSManagedObject>(_: T.Type) throws {
+    public func deleteAllAndSave<T: NSManagedObject>(_: T.Type) throws {
         guard let persistentStoreCoordinator = persistentStoreCoordinator else { fatalError() }
 
         let hasInMemoryStore = persistentStoreCoordinator.persistentStores.contains(where: { $0.type == NSInMemoryStoreType })
