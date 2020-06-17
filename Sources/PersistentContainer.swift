@@ -11,15 +11,17 @@ public protocol PersistentContainerProtocol {
 
 open class PersistentContainer: PersistentContainerProtocol {
     private let nsPersistentContainer: NSPersistentContainerProtocol
+    private let fileManager: FileManager
     private let loader = NSPersistentContainerLoader()
     private let inMemory: Bool
 
-    init(nsPersistentContainer: NSPersistentContainerProtocol, inMemory: Bool = false) {
+    init(nsPersistentContainer: NSPersistentContainerProtocol, inMemory: Bool = false, fileManager: FileManager = .default) {
         self.nsPersistentContainer = nsPersistentContainer
+        self.fileManager = fileManager
         self.inMemory = inMemory
     }
 
-    public convenience init(name: String, managedObjectModel: NSManagedObjectModel? = nil, inMemory: Bool = false) {
+    public convenience init(name: String, managedObjectModel: NSManagedObjectModel? = nil, inMemory: Bool = false, fileManager: FileManager = .default) {
         let nsPersistentContainer: NSPersistentContainer = {
             if let managedObjectModel = managedObjectModel {
                 return NSPersistentContainer(name: name, managedObjectModel: managedObjectModel)
@@ -27,7 +29,7 @@ open class PersistentContainer: PersistentContainerProtocol {
                 return NSPersistentContainer(name: name)
             }
         }()
-        self.init(nsPersistentContainer: nsPersistentContainer, inMemory: inMemory)
+        self.init(nsPersistentContainer: nsPersistentContainer, inMemory: inMemory, fileManager: fileManager)
     }
 
     private let _state = Atomic(State.reset)
@@ -95,8 +97,8 @@ open class PersistentContainer: PersistentContainerProtocol {
 
     public func deleteSQLLiteStores() throws {
         func deleteFileIfExists(at url: URL) throws {
-            if FileManager.default.fileExists(atPath: url.path) {
-                try FileManager.default.removeItem(atPath: url.path)
+            if fileManager.fileExists(atPath: url.path) {
+                try fileManager.removeItem(atPath: url.path)
             }
         }
 
