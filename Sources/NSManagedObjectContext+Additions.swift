@@ -49,16 +49,12 @@ extension NSManagedObjectContext {
         return managedObjects
     }
 
-    public func delete<T: NSManagedObject>(_: T.Type, isDeleted: ((T) -> Bool)? = nil) throws {
-        if let isDeleted = isDeleted {
-            let managedObjects = try fetch(T.self)
-            managedObjects.forEach {
-                if isDeleted($0) {
-                    delete($0)
-                }
+    public func delete<T: NSManagedObject>(_: T.Type, isDeleted: (T) -> Bool) throws {
+        let managedObjects = try fetch(T.self)
+        managedObjects.forEach {
+            if isDeleted($0) {
+                delete($0)
             }
-        } else {
-            try deleteAll(T.self)
         }
     }
 
