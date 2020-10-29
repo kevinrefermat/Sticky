@@ -9,6 +9,13 @@ extension NSManagedObjectContext {
         case modelDoesNotContainEntityWithClassName(String)
     }
 
+    public func perform(block: @escaping (NSManagedObjectContext) -> Void) {
+        perform {
+            block(self)
+            self.reset()
+        }
+    }
+
     public func performAndWait<T>(block: (NSManagedObjectContext) throws -> T) rethrows -> T {
         let value = try executePerformAndWait(
             block: block,
