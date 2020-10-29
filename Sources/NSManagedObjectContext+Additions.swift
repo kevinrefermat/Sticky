@@ -24,6 +24,7 @@ extension NSManagedObjectContext {
         withoutActuallyEscaping(block) { _block in
             performAndWait {
                 result = Result { try _block(self) }
+                reset()
             }
         }
 
