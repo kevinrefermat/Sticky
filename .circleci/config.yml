@@ -7,6 +7,6 @@ jobs:
       - run: xcodebuild -scheme Sticky test -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 11' 
 
 workflows:
-  pull-request:
+  say-hello-workflow:
     jobs:
       - build-and-test
