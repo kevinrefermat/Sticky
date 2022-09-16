@@ -1,4 +1,4 @@
-// Copyright © 2019 Kevin Refermat. All rights reserved.
+// Copyright © 2022 Kevin Refermat. All rights reserved.
 
 import Foundation
 import CoreData
