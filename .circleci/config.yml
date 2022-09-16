@@ -5,7 +5,7 @@ jobs:
       xcode: 12.5.1
     steps:
       - checkout
-      - run: xcodebuild -scheme Sticky test -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 11' 
+      - run: swift test
 
 workflows:
   say-hello-workflow:
