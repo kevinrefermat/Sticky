@@ -23,7 +23,7 @@
 import Foundation
 import CoreData
 
-protocol NSPersistentContainerProtocol: class {
+protocol NSPersistentContainerProtocol: AnyObject {
     var persistentStoreCoordinator: NSPersistentStoreCoordinator { get }
 
     var persistentStoreDescriptions: [NSPersistentStoreDescription] { get set }
