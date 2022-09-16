@@ -26,7 +26,9 @@ import CoreData
 
 extension NSPersistentContainer {
     final class Spy: NSPersistentContainerProtocol {
-        var persistentStoreCoordinator: NSPersistentStoreCoordinator { nsPersistentContainer.persistentStoreCoordinator }
+        var persistentStoreCoordinator: NSPersistentStoreCoordinator {
+            nsPersistentContainer.persistentStoreCoordinator
+        }
 
         private let nsPersistentContainer: NSPersistentContainer
 

@@ -33,7 +33,10 @@ class PersistentContainerTests: XCTestCase {
     override func setUp() {
         super.setUp()
 
-        nsPersistentContainer = NSPersistentContainer(name: "\(type(of: self))DB", managedObjectModel: .singleEntityModel)
+        nsPersistentContainer = NSPersistentContainer(
+            name: "\(type(of: self))DB",
+            managedObjectModel: .singleEntityModel
+        )
         nsPersistentContainerSpy = NSPersistentContainer.Spy(nsPersistentContainer: nsPersistentContainer)
     }
 
@@ -99,7 +102,7 @@ class PersistentContainerTests: XCTestCase {
 
     func testThatLoadPersistentStoresIsNotCalledWhenAsyncronousStartIsCalledASecondTime() {
         resetSUT()
-        
+
         XCTAssertEqual(nsPersistentContainerSpy.loadPersistentStoresCallCount, 0)
         let expectation0 = self.expectation(description: "callback not called")
         sut.start { (result) in
@@ -162,9 +165,12 @@ class PersistentContainerTests: XCTestCase {
         }
 
         waitForExpectations(timeout: 1)
-        
+
         guard case .failedToLoad(let error) = sut.state else { XCTFail(); return }
-        guard case PersistentContainer.Error.failedToLoadPersistentStores(let failures) = error else { XCTFail(); return }
+        guard case PersistentContainer.Error.failedToLoadPersistentStores(let failures) = error else {
+            XCTFail()
+            return
+        }
 
         XCTAssertEqual(failures.count, nsPersistentContainerSpy.persistentStoreDescriptions.count)
     }
@@ -176,13 +182,19 @@ class PersistentContainerTests: XCTestCase {
         XCTAssertThrowsError(try sut.start())
 
         guard case .failedToLoad(let error) = sut.state else { XCTFail(); return }
-        guard case PersistentContainer.Error.failedToLoadPersistentStores(let failures) = error else { XCTFail(); return }
+        guard case PersistentContainer.Error.failedToLoadPersistentStores(let failures) = error else {
+            XCTFail()
+            return
+        }
 
         XCTAssertEqual(failures.count, nsPersistentContainerSpy.persistentStoreDescriptions.count)
     }
 
     func testThatStartCallbackIsCalledWhenLoadingAnAuthenticNSPersistentContainer() {
-        let nsPersistentContainer = NSPersistentContainer(name: UUID().uuidString, managedObjectModel: .singleEntityModel)
+        let nsPersistentContainer = NSPersistentContainer(
+            name: UUID().uuidString,
+            managedObjectModel: .singleEntityModel
+        )
         sut = PersistentContainer(nsPersistentContainer: nsPersistentContainer)
 
         let expectation = self.expectation(description: "start callback was not called")
@@ -209,7 +221,7 @@ class PersistentContainerTests: XCTestCase {
         sut = PersistentContainer(nsPersistentContainer: nsPersistentContainer, inMemory: true)
 
         let expectation = self.expectation(description: "callback not called")
-        sut.start { (result) in
+        sut.start { _ in
             expectation.fulfill()
         }
 
@@ -230,7 +242,7 @@ class PersistentContainerTests: XCTestCase {
         sut = PersistentContainer(nsPersistentContainer: nsPersistentContainer, inMemory: false)
 
         let expectation = self.expectation(description: "callback not called")
-        sut.start { (result) in
+        sut.start { _ in
             expectation.fulfill()
         }
 

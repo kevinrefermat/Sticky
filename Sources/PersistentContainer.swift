@@ -26,7 +26,10 @@ import CoreData
 public protocol PersistentContainerProtocol {
     var state: PersistentContainer.State { get }
     func start() throws -> PersistentContainer.ContextProvider
-    func start(queue: DispatchQueue, completion: @escaping (Result<PersistentContainer.ContextProvider, Swift.Error>) -> Void)
+    func start(
+        queue: DispatchQueue,
+        completion: @escaping (Result<PersistentContainer.ContextProvider, Swift.Error>) -> Void
+    )
 }
 
 open class PersistentContainer: PersistentContainerProtocol {
@@ -35,13 +38,22 @@ open class PersistentContainer: PersistentContainerProtocol {
     private let loader = NSPersistentContainerLoader()
     private let inMemory: Bool
 
-    init(nsPersistentContainer: NSPersistentContainerProtocol, inMemory: Bool = false, fileManager: FileManagerProtocol = FileManager.default) {
+    init(
+        nsPersistentContainer: NSPersistentContainerProtocol,
+        inMemory: Bool = false,
+        fileManager: FileManagerProtocol = FileManager.default
+    ) {
         self.nsPersistentContainer = nsPersistentContainer
         self.fileManager = fileManager
         self.inMemory = inMemory
     }
 
-    public convenience init(name: String, managedObjectModel: NSManagedObjectModel? = nil, inMemory: Bool = false, fileManager: FileManagerProtocol = FileManager.default) {
+    public convenience init(
+        name: String,
+        managedObjectModel: NSManagedObjectModel? = nil,
+        inMemory: Bool = false,
+        fileManager: FileManagerProtocol = FileManager.default
+    ) {
         let nsPersistentContainer: NSPersistentContainer = {
             if let managedObjectModel = managedObjectModel {
                 return NSPersistentContainer(name: name, managedObjectModel: managedObjectModel)
@@ -85,7 +97,10 @@ open class PersistentContainer: PersistentContainerProtocol {
         return contextProvider
     }
 
-    public func start(queue: DispatchQueue = .main, completion: @escaping (Result<ContextProvider, Swift.Error>) -> Void) {
+    public func start(
+        queue: DispatchQueue = .main,
+        completion: @escaping (Result<ContextProvider, Swift.Error>
+    ) -> Void) {
         do {
             try resetToLoading()
         } catch {
@@ -142,7 +157,12 @@ open class PersistentContainer: PersistentContainerProtocol {
         case .loading:
             throw PersistentContainer.Error.cannotDeleteSQLLiteStoresWhileLoading
         case .loaded:
-            try urls.forEach { try nsPersistentContainer.persistentStoreCoordinator.destroyPersistentStore(at: $0, ofType: NSSQLiteStoreType) }
+            try urls.forEach {
+                try nsPersistentContainer.persistentStoreCoordinator.destroyPersistentStore(
+                    at: $0,
+                    ofType: NSSQLiteStoreType
+                )
+            }
             try deleteDatabaseFiles(for: urls)
             throw PersistentContainer.Error.reinitializationRequired
         case .reset, .failedToLoad:

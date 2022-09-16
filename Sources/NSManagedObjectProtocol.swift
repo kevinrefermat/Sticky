@@ -39,7 +39,7 @@ extension NSManagedObjectProtocol {
 
     private func setValue(_ value: Any?, atAnyKeyPath anyKeyPath: AnyKeyPath) throws {
         let keyPath = try ValidatedKVCKeyPath(keyPath: anyKeyPath)
-        setValue(value, forKey: keyPath._kvcKeyPathString)
+        setValue(value, forKey: keyPath.kvcKeyPathString)
     }
 }
 

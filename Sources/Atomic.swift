@@ -23,7 +23,10 @@
 import Foundation
 
 final class Atomic<Value> {
-    private let queue = DispatchQueue(label: "com.\(String(reflecting: Atomic.self))<\(String(describing: Value.self))>", attributes: .concurrent)
+    private let queue = DispatchQueue(
+        label: "com.\(String(reflecting: Atomic.self))<\(String(describing: Value.self))>",
+        attributes: .concurrent
+    )
 
     private var _value: Value
 
@@ -44,7 +47,7 @@ final class Atomic<Value> {
         }
     }
 
-    func modify(block: (inout Value) throws -> ()) rethrows {
+    func modify(block: (inout Value) throws -> Void) rethrows {
         try queue.sync(flags: .barrier) {
             try block(&_value)
         }

@@ -25,7 +25,7 @@ import CoreData
 
 @objc(ExampleEntity)
 final class ExampleEntity: NSManagedObject {
-    @objc @NSManaged var uuidString: String?
+    @NSManaged var uuidString: String?
 }
 
 extension NSManagedObjectModel {

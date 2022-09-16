@@ -6,12 +6,16 @@ import PackageDescription
 let package = Package(
     name: "Sticky",
     platforms: [
-        .macOS(.v10_12), .iOS(.v10), .tvOS(.v10), .watchOS(.v3),
+        .macOS(.v10_12),
+        .iOS(.v10),
+        .tvOS(.v10),
+        .watchOS(.v3)
     ],
     products: [
         .library(
             name: "Sticky",
-            targets: ["Sticky"]),
+            targets: ["Sticky"]
+        )
     ],
     dependencies: [
 
@@ -20,10 +24,12 @@ let package = Package(
         .target(
             name: "Sticky",
             dependencies: [],
-            path: "Sources"),
+            path: "Sources"
+        ),
         .testTarget(
             name: "StickyTests",
             dependencies: ["Sticky"],
-            path: "Tests"),
+            path: "Tests"
+        )
     ]
 )

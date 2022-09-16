@@ -9,6 +9,14 @@ on:
     - cron: 0 0 * * *
 
 jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout the code
+      uses: actions/checkout@v3
+    - name: SwiftLint
+      uses: norio-nomura/action-swiftlint@3.2.1
+  
   build-and-test-on-all-platforms:
     runs-on: macos-latest
 

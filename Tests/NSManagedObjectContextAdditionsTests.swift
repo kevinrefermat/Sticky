@@ -37,11 +37,17 @@ class NSManagedObjectContextAdditionsSyncTests: XCTestCase {
     override func setUp() {
         super.setUp()
 
-        let nsPersistentContainer = NSPersistentContainer.preloadedInMemoryDouble(name: "NSManagedObjectContextAdditionsTestsDB", managedObjectModel: .singleEntityModel)
+        let nsPersistentContainer = NSPersistentContainer.preloadedInMemoryDouble(
+            name: "NSManagedObjectContextAdditionsTestsDB",
+            managedObjectModel: .singleEntityModel
+        )
         contextProviderSpy = PersistentContainer.ContextProviderSpy(nsPersistentContainer: nsPersistentContainer)
     }
 
-    func performBlockOnContext<T>(context: NSManagedObjectContext? = nil, block: @escaping (NSManagedObjectContext) throws -> T) throws -> T {
+    func performBlockOnContext<T>(
+        context: NSManagedObjectContext? = nil,
+        block: @escaping (NSManagedObjectContext) throws -> T
+    ) throws -> T {
         let context = context ?? contextProviderSpy.newBackgroundContext()
 
         switch contextAccessType {
@@ -149,7 +155,7 @@ class NSManagedObjectContextAdditionsSyncTests: XCTestCase {
 
         XCTAssertThrowsError(
             try performBlockOnContext(context: context) { (context) in
-                let _ = try context.fetch(ExampleEntity.self)
+                _ = try context.fetch(ExampleEntity.self)
             }
         )
     }
@@ -159,7 +165,7 @@ class NSManagedObjectContextAdditionsSyncTests: XCTestCase {
 
         XCTAssertThrowsError(
             try performBlockOnContext { (context) in
-                let _ = try context.fetch(TestManagedObject.self)
+                _ = try context.fetch(TestManagedObject.self)
             }
         )
     }
