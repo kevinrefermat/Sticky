@@ -18,14 +18,14 @@ jobs:
     - name: Show eligible build destinations for Sticky
       run: xcodebuild -showdestinations -scheme Sticky
     - name: Build and test ( macOS 12.0 Monterey)
-      run: xcodebuild test -scheme Sticky -destination 'platform=macOS, arch=x86_64, id=4203018E-580F-C1B5-9525-B745CECA79EB'
+      run: xcodebuild test -scheme Sticky -destination 'platform=macOS,arch=x86_64,id=4203018E-580F-C1B5-9525-B745CECA79EB'
     - name: Build and test ( mac Catalyst 12.0)
-      run: xcodebuild test -scheme Sticky -destination 'platform=macOS, arch=x86_64, variant=Mac Catalyst, id=4203018E-580F-C1B5-9525-B745CECA79EB'
+      run: xcodebuild test -scheme Sticky -destination 'platform=macOS,arch=x86_64,variant=Mac Catalyst,id=4203018E-580F-C1B5-9525-B745CECA79EB'
     - name: Build and test ( tvOS 15.2)
-      run: xcodebuild test -scheme Sticky -destination 'platform=tvOS Simulator, id=CCEB8BA8-0DF8-4450-A835-6139942C7CB5, OS=15.2, name=Apple TV 4K (2nd generation)'
+      run: xcodebuild test -scheme Sticky -destination 'platform=tvOS Simulator,id=CCEB8BA8-0DF8-4450-A835-6139942C7CB5,OS=15.2,name=Apple TV 4K (2nd generation)'
     - name: Build and test ( watchOS 8.3)
-      run: xcodebuild test -scheme Sticky -destination 'platform=watchOS Simulator, id=13E5D2CB-3B76-4DDA-BD06-460DCFA3C07B, OS=8.3, name=Apple Watch Series 7 - 45mm'
+      run: xcodebuild test -scheme Sticky -destination 'platform=watchOS Simulator,id=13E5D2CB-3B76-4DDA-BD06-460DCFA3C07B,OS=8.3,name=Apple Watch Series 7 - 45mm'
     - name: Build and test ( iPadOS 15.2)
-      run: xcodebuild test -scheme Sticky -destination 'platform=iOS Simulator, id=3177E557-493C-4428-9196-4E8DF6A30685, OS=15.2, name=iPad Pro (12.9-inch) (5th generation)'
+      run: xcodebuild test -scheme Sticky -destination 'platform=iOS Simulator,id=3177E557-493C-4428-9196-4E8DF6A30685,OS=15.2,name=iPad Pro (12.9-inch) (5th generation)'
     - name: Build and test ( iOS 15.2)
-      run: xcodebuild test -scheme Sticky -destination 'platform=iOS Simulator, id=57737407-8D3C-4CC4-A54D-2CF8733D30D0, OS=15.2, name=iPhone 13 Pro Max'
+      run: xcodebuild test -scheme Sticky -destination 'platform=iOS Simulator,id=57737407-8D3C-4CC4-A54D-2CF8733D30D0,OS=15.2,name=iPhone 13 Pro Max'
