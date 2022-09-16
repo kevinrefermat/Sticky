@@ -27,13 +27,13 @@ struct ValidatedKVCKeyPath {
         case kvcKeyPathStringWasNil
     }
 
-    let _kvcKeyPathString: String
+    let kvcKeyPathString: String
 
     init(keyPath: AnyKeyPath) throws {
-        guard let _kvcKeyPathString = keyPath._kvcKeyPathString else {
+        guard let kvcKeyPathString = keyPath._kvcKeyPathString else {
             throw Error.kvcKeyPathStringWasNil
         }
 
-        self._kvcKeyPathString = _kvcKeyPathString
+        self.kvcKeyPathString = kvcKeyPathString
     }
 }

@@ -35,7 +35,10 @@ class PersistentContainerContextProviderTests: XCTestCase {
     override func setUp() {
         super.setUp()
 
-        nsPersistentContainer = NSPersistentContainer.preloadedInMemoryDouble(name: "PersistentContainerContextProviderTestsDB", managedObjectModel: .singleEntityModel)
+        nsPersistentContainer = NSPersistentContainer.preloadedInMemoryDouble(
+            name: "PersistentContainerContextProviderTestsDB",
+            managedObjectModel: .singleEntityModel
+        )
         nsPersistentContainerSpy = NSPersistentContainer.Spy(nsPersistentContainer: nsPersistentContainer)
     }
 
@@ -53,7 +56,7 @@ class PersistentContainerContextProviderTests: XCTestCase {
         resetSUT()
 
         XCTAssertEqual(nsPersistentContainerSpy.newBackgroundContextCallCount, 0)
-        let _ = sut.newBackgroundContext()
+        _ = sut.newBackgroundContext()
         XCTAssertEqual(nsPersistentContainerSpy.newBackgroundContextCallCount, 1)
     }
 }

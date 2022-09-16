@@ -36,7 +36,7 @@ extension Preset: Hashable {
     public static func == (lhs: Preset<Receiver>, rhs: Preset<Receiver>) -> Bool {
         return lhs.keyPath == rhs.keyPath
     }
-    
+
     public func hash(into hasher: inout Hasher) {
         hasher.combine(keyPath)
     }

@@ -45,12 +45,15 @@ extension NSManagedObjectContext {
         return value
     }
 
-    private func executePerformAndWait<T>(block: (NSManagedObjectContext) throws -> T, rescue: ((Swift.Error) throws -> (T))) rethrows -> T {
+    private func executePerformAndWait<T>(
+        block: (NSManagedObjectContext) throws -> T,
+        rescue: (Swift.Error) throws -> T
+    ) rethrows -> T {
         var result: Result<T, Swift.Error>?
 
-        withoutActuallyEscaping(block) { _block in
+        withoutActuallyEscaping(block) { block in
             performAndWait {
-                result = Result { try _block(self) }
+                result = Result { try block(self) }
                 reset()
             }
         }
@@ -89,7 +92,9 @@ extension NSManagedObjectContext {
     public func deleteAllAndSave<T: NSManagedObject>(_: T.Type) throws {
         guard let persistentStoreCoordinator = persistentStoreCoordinator else { fatalError() }
 
-        let hasInMemoryStore = persistentStoreCoordinator.persistentStores.contains(where: { $0.type == NSInMemoryStoreType })
+        let hasInMemoryStore = persistentStoreCoordinator.persistentStores.contains(
+            where: { $0.type == NSInMemoryStoreType }
+        )
 
         if hasInMemoryStore {
             try delete(T.self, isDeleted: { _ in true })
@@ -99,13 +104,19 @@ extension NSManagedObjectContext {
             fetchRequest.entity = try entity(for: T.self)
             let deleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
             deleteRequest.resultType = .resultTypeObjectIDs
-            guard let batchDeleteResult = try persistentStoreCoordinator.execute(deleteRequest, with: self) as? NSBatchDeleteResult else {
+            guard let batchDeleteResult = try persistentStoreCoordinator.execute(
+                deleteRequest,
+                with: self
+            ) as? NSBatchDeleteResult else {
                 fatalError("An executed NSBatchDeleteRequest should always have return type NSBatchDeleteResult")
             }
             guard let deletedObjectIDs = batchDeleteResult.result as? [NSManagedObjectID] else {
-                fatalError("The NSBatchDeleteResult from a NSBatchDeleteRequest with resultType .resultTypeObjectIDs should always have type [NSManagedObjectID]")
+                fatalError("""
+                The NSBatchDeleteResult from a NSBatchDeleteRequest with resultType .resultTypeObjectIDs \
+                should always have type [NSManagedObjectID]
+                """)
             }
-            let changes: [AnyHashable : Any] = [NSDeletedObjectsKey : deletedObjectIDs]
+            let changes: [AnyHashable: Any] = [NSDeletedObjectsKey: deletedObjectIDs]
             NSManagedObjectContext.mergeChanges(fromRemoteContextSave: changes, into: [self])
         }
     }

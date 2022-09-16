@@ -27,33 +27,43 @@ final class NSPersistentContainerLoader {
     private let queue = DispatchQueue(label: "com.\(String(reflecting: type(of: NSPersistentContainerLoader.self)))")
 
     @discardableResult
-    func syncLoad(nsPersistentContainer: NSPersistentContainerProtocol, handler: ((NSPersistentStoreDescription, Error?) -> ())? = nil) -> [NSPersistentStoreDescription: Error] {
+    func syncLoad(
+        nsPersistentContainer: NSPersistentContainerProtocol,
+        handler: ((NSPersistentStoreDescription, Error?) -> Void)? = nil
+    ) -> [NSPersistentStoreDescription: Error] {
         var persistentStoreDescriptionToError = [NSPersistentStoreDescription: Error]()
 
         nsPersistentContainer.persistentStoreDescriptions.forEach { $0.shouldAddStoreAsynchronously = false }
 
         var notLoadedPersistentStoreDescriptions = Set(nsPersistentContainer.persistentStoreDescriptions)
 
-        let completion: (NSPersistentStoreDescription, Error?) -> () = { (persistentStoreDescription, error) in
+        let completion: (NSPersistentStoreDescription, Error?) -> Void = { (persistentStoreDescription, error) in
             notLoadedPersistentStoreDescriptions.remove(persistentStoreDescription)
             persistentStoreDescriptionToError[persistentStoreDescription] = error
         }
 
         let handler = handler ?? { (_, _) in }
-        
-        withoutActuallyEscaping(handler) { (_handler) in
+
+        withoutActuallyEscaping(handler) { (handler) in
             nsPersistentContainer.loadPersistentStores { (persistentStoreDescription, error) in
-                _handler(persistentStoreDescription, error)
+                handler(persistentStoreDescription, error)
                 completion(persistentStoreDescription, error)
             }
         }
 
-        assert(notLoadedPersistentStoreDescriptions.isEmpty, "did not finish loading stores \(notLoadedPersistentStoreDescriptions)")
+        assert(
+            notLoadedPersistentStoreDescriptions.isEmpty,
+            "did not finish loading stores \(notLoadedPersistentStoreDescriptions)"
+        )
 
         return persistentStoreDescriptionToError
     }
 
-    func asyncLoad(nsPersistentContainer: NSPersistentContainerProtocol, handler: ((NSPersistentStoreDescription, Error?) -> ())? = nil, completion: @escaping ([NSPersistentStoreDescription: Error]) -> ()) {
+    func asyncLoad(
+        nsPersistentContainer: NSPersistentContainerProtocol,
+        handler: ((NSPersistentStoreDescription, Error?) -> Void)? = nil,
+        completion: @escaping ([NSPersistentStoreDescription: Error]) -> Void
+    ) {
         var persistentStoreDescriptionToError = [NSPersistentStoreDescription: Error]()
 
         nsPersistentContainer.persistentStoreDescriptions.forEach { $0.shouldAddStoreAsynchronously = true }
