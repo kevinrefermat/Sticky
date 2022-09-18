@@ -24,12 +24,25 @@ import Foundation
 import CoreData
 
 extension NSManagedObjectContext {
+    /// Asynchronously performs the specified block on the context’s queue.
+    /// - Parameters:
+    ///   - block: The block to perform.
+    ///   - context: The current context.
+    ///
+    /// The receiving context is retained until `block` is executed.
     public func perform(block: @escaping (NSManagedObjectContext) -> Void) {
         perform {
             block(self)
         }
     }
 
+    /// Synchronously performs the specified block on the context’s queue.
+    /// - Parameters:
+    ///   - block: The block to perform.
+    ///   - context: The current context.
+    /// - Returns: The value returned by `block`, or `Void` if no value returned.
+    ///
+    /// Errors thrown in `block` are rethrown.
     public func performAndWait<T>(block: (NSManagedObjectContext) throws -> T) rethrows -> T {
         var result: Result<T, Swift.Error>?
 
