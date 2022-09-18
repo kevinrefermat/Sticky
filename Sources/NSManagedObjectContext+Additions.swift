@@ -25,29 +25,29 @@ import CoreData
 
 extension NSManagedObjectContext {
     @discardableResult
-    public func create<T: NSManagedObject>(_: T.Type) throws -> T {
-        let entity = try entity(for: T.self)
+    public func create<T: NSManagedObject>(_ type: T.Type) throws -> T {
+        let entity = try entity(for: type)
         let managedObject = T.init(entity: entity, insertInto: self)
         return managedObject
     }
 
-    public func fetch<T: NSManagedObject>(_: T.Type, block: ((NSFetchRequest<T>) -> Void)? = nil) throws -> [T] {
+    public func fetch<T: NSManagedObject>(_ type: T.Type, block: ((NSFetchRequest<T>) -> Void)? = nil) throws -> [T] {
         let request = NSFetchRequest<T>()
         block?(request)
-        request.entity = try entity(for: T.self)
+        request.entity = try entity(for: type)
         let managedObjects = try fetch(request) as [T]
         return managedObjects
     }
 
-    public func delete<T: NSManagedObject>(_: T.Type, block: ((NSFetchRequest<T>) -> Void)? = nil) throws {
-        let managedObjects = try fetch(T.self, block: block)
+    public func delete<T: NSManagedObject>(_ type: T.Type, block: ((NSFetchRequest<T>) -> Void)? = nil) throws {
+        let managedObjects = try fetch(type, block: block)
         managedObjects.forEach(delete)
     }
 
-    public func entity<T: NSManagedObject>(for _: T.Type) throws -> NSEntityDescription {
+    public func entity<T: NSManagedObject>(for type: T.Type) throws -> NSEntityDescription {
         let persistentStoreCoordinator = try persistentStoreCoordinator()
         let managedObjectModel = persistentStoreCoordinator.managedObjectModel
-        let className = String(reflecting: T.self)
+        let className = String(reflecting: type)
         let entity = try managedObjectModel.entity(for: className)
         return entity
     }
