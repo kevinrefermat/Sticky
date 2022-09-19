@@ -174,7 +174,7 @@ class NSManagedObjectContextAdditionsSyncTests: XCTestCase {
         let expectedUUIDString = UUID().uuidString
         XCTAssertNoThrow(
             try performBlockOnContext { (context) in
-                let newExampleEntity = try context.create(ExampleEntity.self)
+                let newExampleEntity = try ExampleEntity(context)
                 newExampleEntity.uuidString = expectedUUIDString
                 try context.save()
             }
@@ -203,7 +203,8 @@ class NSManagedObjectContextAdditionsSyncTests: XCTestCase {
         let uuidString = UUID().uuidString
         XCTAssertNoThrow(
             try performBlockOnContext { (context) in
-                try context.create(ExampleEntity.self, with: [Preset(key: \.uuidString, value: uuidString)])
+                let object = try ExampleEntity(context)
+                object.uuidString = uuidString
                 try context.save()
             }
         )
@@ -222,7 +223,7 @@ class NSManagedObjectContextAdditionsSyncTests: XCTestCase {
         XCTAssertNoThrow(
             try performBlockOnContext { (context) in
                 try (0..<entityCount).forEach { _ in
-                    let newExampleEntity = try context.create(ExampleEntity.self)
+                    let newExampleEntity = try ExampleEntity(context)
                     newExampleEntity.uuidString = UUID().uuidString
                 }
 
@@ -253,8 +254,10 @@ class NSManagedObjectContextAdditionsSyncTests: XCTestCase {
 
         XCTAssertNoThrow(
             try performBlockOnContext { (context) in
-                try context.create(ExampleEntity.self, with: [Preset(key: \.uuidString, value: uuidA.uuidString)])
-                try context.create(ExampleEntity.self, with: [Preset(key: \.uuidString, value: uuidB.uuidString)])
+                let a = try ExampleEntity(context)
+                a.uuidString = uuidA.uuidString
+                let b = try ExampleEntity(context)
+                b.uuidString = uuidB.uuidString
                 try context.save()
             }
         )
