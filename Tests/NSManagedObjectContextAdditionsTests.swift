@@ -173,7 +173,7 @@ class NSManagedObjectContextAdditionsSyncTests: XCTestCase {
         )
     }
 
-    func testPresetValues() {
+    func testThatValuesArePersistedAcrossContextsWhenSaved() {
         let uuidString = UUID().uuidString
         XCTAssertNoThrow(
             try performBlockOnContext { (context) in
