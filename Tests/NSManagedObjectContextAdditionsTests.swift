@@ -74,32 +74,6 @@ class NSManagedObjectContextAdditionsSyncTests: XCTestCase {
         }
     }
 
-    func testThatPerformAndWaitReturnsSameValueReturnedByBlock() throws {
-        let expected = UUID().uuidString
-        let actual = try performBlockOnContext { _ in expected }
-        XCTAssertEqual(expected, actual)
-    }
-
-    func testThatPerformAndWaitThrowsSameErrorThrownByBlock() {
-        do {
-            try performBlockOnContext { _ in throw TestError() }
-        } catch {
-            guard error is TestError else { XCTFail(); return }
-        }
-    }
-
-    func testThatPerformAndWaitContextSuccessfullySaves() {
-        let expected = UUID().uuidString
-        insertExampleEntity(uuidString: expected)
-
-        XCTAssertNoThrow(
-            try performBlockOnContext { (context) in
-                let actual = try context.fetch(ExampleEntity.self)
-                XCTAssertEqual([expected], actual.compactMap { $0.uuidString })
-            }
-        )
-    }
-
     func testThatFetchReturnsEmptyArrayWhenNoEntitiesArePersisted() {
         let expected = UUID().uuidString
         insertExampleEntity(uuidString: expected)
