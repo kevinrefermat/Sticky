@@ -29,44 +29,6 @@ extension NSManagedObjectContext {
         case modelDoesNotContainEntityWithClassName(String)
     }
 
-    public func perform(block: @escaping (NSManagedObjectContext) -> Void) {
-        perform {
-            block(self)
-            self.reset()
-        }
-    }
-
-    public func performAndWait<T>(block: (NSManagedObjectContext) throws -> T) rethrows -> T {
-        let value = try executePerformAndWait(
-            block: block,
-            rescue: { throw $0 }
-        )
-
-        return value
-    }
-
-    private func executePerformAndWait<T>(
-        block: (NSManagedObjectContext) throws -> T,
-        rescue: (Swift.Error) throws -> T
-    ) rethrows -> T {
-        var result: Result<T, Swift.Error>?
-
-        withoutActuallyEscaping(block) { block in
-            performAndWait {
-                result = Result { try block(self) }
-                reset()
-            }
-        }
-
-        switch result! {
-        case .success(let value):
-            return value
-        case .failure(let error):
-            let value = try rescue(error)
-            return value
-        }
-    }
-
     @discardableResult
     public func create<T: NSManagedObject>(_: T.Type, with presets: Set<Preset<T>> = []) throws -> T {
         return try T(self, with: presets)
