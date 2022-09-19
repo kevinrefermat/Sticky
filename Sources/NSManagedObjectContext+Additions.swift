@@ -29,11 +29,6 @@ extension NSManagedObjectContext {
         case modelDoesNotContainEntityWithClassName(String)
     }
 
-    @discardableResult
-    public func create<T: NSManagedObject>(_: T.Type, with presets: Set<Preset<T>> = []) throws -> T {
-        return try T(self, with: presets)
-    }
-
     public func fetch<T: NSManagedObject>(_: T.Type, block: ((NSFetchRequest<T>) -> Void)? = nil) throws -> [T] {
         let request = NSFetchRequest<T>()
         block?(request)

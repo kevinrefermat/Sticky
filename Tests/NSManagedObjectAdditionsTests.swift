@@ -41,7 +41,7 @@ class NSManagedObjectAdditionsTests: XCTestCase {
         XCTAssertNoThrow(
             try nsPersistentContainer.viewContext.performAndWait { (context) in
                 let newExampleEntity = try ExampleEntity(context)
-                try newExampleEntity.setValue(expectedUUIDString, atKeyPath: \ExampleEntity.uuidString)
+                newExampleEntity.uuidString = expectedUUIDString
                 try context.save()
             }
         )
