@@ -72,4 +72,16 @@ extension NSManagedObjectContext {
             NSManagedObjectContext.mergeChanges(fromRemoteContextSave: changes, into: [self])
         }
     }
+
+    func persistentStoreCoordinator() throws -> NSPersistentStoreCoordinator {
+        enum Error: Swift.Error {
+            case persistentStoreCoordinatorWasNil
+        }
+
+        guard let persistentStoreCoordinator = persistentStoreCoordinator else {
+            throw Error.persistentStoreCoordinatorWasNil
+        }
+
+        return persistentStoreCoordinator
+    }
 }

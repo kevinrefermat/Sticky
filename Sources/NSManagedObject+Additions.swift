@@ -42,20 +42,11 @@ extension NSManagedObject {
     }
 
     public class func entity(_ context: NSManagedObjectContext) throws -> NSEntityDescription {
-        enum Error: Swift.Error {
-            case persistentStoreCoordinatorWasNil
-            case modelDoesNotContainEntityWithClassName(String)
-        }
-
-        guard let persistentStoreCoordinator = context.persistentStoreCoordinator else {
-            throw Error.persistentStoreCoordinatorWasNil
-        }
+        let persistentStoreCoordinator = try context.persistentStoreCoordinator()
 
         let managedObjectModel = persistentStoreCoordinator.managedObjectModel
         let className = String(reflecting: Self.self)
-        guard let entity = managedObjectModel.entities.first(where: { $0.managedObjectClassName == className }) else {
-            throw Error.modelDoesNotContainEntityWithClassName(className)
-        }
+        let entity = try managedObjectModel.entity(for: className)
         return entity
     }
 }
