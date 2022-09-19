@@ -24,15 +24,10 @@ import Foundation
 import CoreData
 
 extension NSManagedObjectContext {
-    enum Error: Swift.Error {
-        case persistentStoreCoordinatorWasNil
-        case modelDoesNotContainEntityWithClassName(String)
-    }
-
     public func fetch<T: NSManagedObject>(_: T.Type, block: ((NSFetchRequest<T>) -> Void)? = nil) throws -> [T] {
         let request = NSFetchRequest<T>()
         block?(request)
-        request.entity = try entity(for: T.self)
+        request.entity = try T.entity(self)
         let managedObjects = try fetch(request) as [T]
         return managedObjects
     }
@@ -58,7 +53,7 @@ extension NSManagedObjectContext {
             try save()
         } else {
             let fetchRequest: NSFetchRequest<NSFetchRequestResult> = NSFetchRequest()
-            fetchRequest.entity = try entity(for: T.self)
+            fetchRequest.entity = try T.entity(self)
             let deleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
             deleteRequest.resultType = .resultTypeObjectIDs
             guard let batchDeleteResult = try persistentStoreCoordinator.execute(
@@ -76,18 +71,5 @@ extension NSManagedObjectContext {
             let changes: [AnyHashable: Any] = [NSDeletedObjectsKey: deletedObjectIDs]
             NSManagedObjectContext.mergeChanges(fromRemoteContextSave: changes, into: [self])
         }
-    }
-
-    public func entity<T: NSManagedObject>(for _: T.Type) throws -> NSEntityDescription {
-        guard let persistentStoreCoordinator = persistentStoreCoordinator else {
-            throw Error.persistentStoreCoordinatorWasNil
-        }
-
-        let managedObjectModel = persistentStoreCoordinator.managedObjectModel
-        let className = String(reflecting: T.self)
-        guard let entity = managedObjectModel.entities.first(where: { $0.managedObjectClassName == className }) else {
-            throw Error.modelDoesNotContainEntityWithClassName(className)
-        }
-        return entity
     }
 }

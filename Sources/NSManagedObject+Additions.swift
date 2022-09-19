@@ -37,7 +37,25 @@ extension NSManagedObject {
 
     @discardableResult
     public convenience init(_ context: NSManagedObjectContext) throws {
-        let entity = try context.entity(for: Self.self)
+        let entity = try Self.entity(context)
         self.init(entity: entity, insertInto: context)
+    }
+
+    public class func entity(_ context: NSManagedObjectContext) throws -> NSEntityDescription {
+        enum Error: Swift.Error {
+            case persistentStoreCoordinatorWasNil
+            case modelDoesNotContainEntityWithClassName(String)
+        }
+
+        guard let persistentStoreCoordinator = context.persistentStoreCoordinator else {
+            throw Error.persistentStoreCoordinatorWasNil
+        }
+
+        let managedObjectModel = persistentStoreCoordinator.managedObjectModel
+        let className = String(reflecting: Self.self)
+        guard let entity = managedObjectModel.entities.first(where: { $0.managedObjectClassName == className }) else {
+            throw Error.modelDoesNotContainEntityWithClassName(className)
+        }
+        return entity
     }
 }
