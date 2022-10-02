@@ -148,7 +148,7 @@ class NSManagedObjectContextAdditionsSyncTests: XCTestCase {
         let expectedUUIDString = UUID().uuidString
         XCTAssertNoThrow(
             try performBlockOnContext { (context) in
-                let newExampleEntity = try ExampleEntity(context)
+                let newExampleEntity = try context.create(ExampleEntity.self)
                 newExampleEntity.uuidString = expectedUUIDString
                 try context.save()
             }
@@ -168,7 +168,7 @@ class NSManagedObjectContextAdditionsSyncTests: XCTestCase {
 
         XCTAssertThrowsError(
             try performBlockOnContext { (context) in
-                try OrphanManagedObject(context)
+                try context.create(OrphanManagedObject.self)
             }
         )
     }
@@ -177,7 +177,7 @@ class NSManagedObjectContextAdditionsSyncTests: XCTestCase {
         let uuidString = UUID().uuidString
         XCTAssertNoThrow(
             try performBlockOnContext { (context) in
-                let object = try ExampleEntity(context)
+                let object = try context.create(ExampleEntity.self)
                 object.uuidString = uuidString
                 try context.save()
             }
@@ -197,7 +197,7 @@ class NSManagedObjectContextAdditionsSyncTests: XCTestCase {
         XCTAssertNoThrow(
             try performBlockOnContext { (context) in
                 try (0..<entityCount).forEach { _ in
-                    let newExampleEntity = try ExampleEntity(context)
+                    let newExampleEntity = try context.create(ExampleEntity.self)
                     newExampleEntity.uuidString = UUID().uuidString
                 }
 
@@ -228,9 +228,9 @@ class NSManagedObjectContextAdditionsSyncTests: XCTestCase {
 
         XCTAssertNoThrow(
             try performBlockOnContext { (context) in
-                let a = try ExampleEntity(context)
+                let a = try context.create(ExampleEntity.self)
                 a.uuidString = uuidA.uuidString
-                let b = try ExampleEntity(context)
+                let b = try context.create(ExampleEntity.self)
                 b.uuidString = uuidB.uuidString
                 try context.save()
             }
@@ -254,7 +254,7 @@ class NSManagedObjectContextAdditionsSyncTests: XCTestCase {
     func insertExampleEntity(uuidString: String) {
         XCTAssertNoThrow(
             try performBlockOnContext { (context) in
-                let exampleEntity = try ExampleEntity(context)
+                let exampleEntity = try context.create(ExampleEntity.self)
                 exampleEntity.uuidString = uuidString
                 try context.save()
             }

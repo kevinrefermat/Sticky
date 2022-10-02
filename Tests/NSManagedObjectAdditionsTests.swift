@@ -40,7 +40,7 @@ class NSManagedObjectAdditionsTests: XCTestCase {
         let expectedUUIDString = UUID().uuidString
         XCTAssertNoThrow(
             try nsPersistentContainer.viewContext.performAndWait { (context) in
-                let newExampleEntity = try ExampleEntity(context)
+                let newExampleEntity = try context.create(ExampleEntity.self)
                 newExampleEntity.uuidString = expectedUUIDString
                 try context.save()
             }
@@ -60,7 +60,7 @@ class NSManagedObjectAdditionsTests: XCTestCase {
 
         XCTAssertThrowsError(
             try nsPersistentContainer.viewContext.performAndWait { (context) in
-                try OrphanManagedObject(context)
+                try context.create(OrphanManagedObject.self)
             }
         )
     }

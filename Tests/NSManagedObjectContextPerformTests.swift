@@ -71,7 +71,7 @@ class NSManagedObjectContextPerformTests: XCTestCase {
         let expected = UUID().uuidString
 
         try contextProviderSpy.newBackgroundContext().performAndWait { (context) in
-            let exampleEntity = try ExampleEntity(context)
+            let exampleEntity = try context.create(ExampleEntity.self)
             exampleEntity.uuidString = expected
             try context.save()
         }
