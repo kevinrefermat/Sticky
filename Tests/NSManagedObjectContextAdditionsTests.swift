@@ -163,16 +163,6 @@ class NSManagedObjectContextAdditionsSyncTests: XCTestCase {
         )
     }
 
-    func testThatCreateThrowsErrorWhenContextModelDoesNotClaimEntity() {
-        final class OrphanManagedObject: NSManagedObject {}
-
-        XCTAssertThrowsError(
-            try performBlockOnContext { (context) in
-                try context.create(OrphanManagedObject.self)
-            }
-        )
-    }
-
     func testThatValuesArePersistedAcrossContextsWhenSaved() {
         let uuidString = UUID().uuidString
         XCTAssertNoThrow(
