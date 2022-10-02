@@ -34,19 +34,4 @@ extension NSManagedObject {
     /// it gets confused and spews warnings and errors in the console. This happens during
     /// tests when multiple `PersistentContainers` are often in memory at once due to concurrent tests.
     public convenience init(context: NSManagedObjectContext) { fatalError() }
-
-    @discardableResult
-    public convenience init(_ context: NSManagedObjectContext) throws {
-        let entity = try Self.entity(context)
-        self.init(entity: entity, insertInto: context)
-    }
-
-    public class func entity(_ context: NSManagedObjectContext) throws -> NSEntityDescription {
-        let persistentStoreCoordinator = try context.persistentStoreCoordinator()
-
-        let managedObjectModel = persistentStoreCoordinator.managedObjectModel
-        let className = String(reflecting: Self.self)
-        let entity = try managedObjectModel.entity(for: className)
-        return entity
-    }
 }

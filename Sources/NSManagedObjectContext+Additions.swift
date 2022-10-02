@@ -24,10 +24,17 @@ import Foundation
 import CoreData
 
 extension NSManagedObjectContext {
+    @discardableResult
+    public func create<T: NSManagedObject>(_: T.Type) throws -> T {
+        let entity = try entity(for: T.self)
+        let managedObject = T.init(entity: entity, insertInto: self)
+        return managedObject
+    }
+
     public func fetch<T: NSManagedObject>(_: T.Type, block: ((NSFetchRequest<T>) -> Void)? = nil) throws -> [T] {
         let request = NSFetchRequest<T>()
         block?(request)
-        request.entity = try T.entity(self)
+        request.entity = try entity(for: T.self)
         let managedObjects = try fetch(request) as [T]
         return managedObjects
     }
@@ -53,7 +60,7 @@ extension NSManagedObjectContext {
             try save()
         } else {
             let fetchRequest: NSFetchRequest<NSFetchRequestResult> = NSFetchRequest()
-            fetchRequest.entity = try T.entity(self)
+            fetchRequest.entity = try entity(for: T.self)
             let deleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
             deleteRequest.resultType = .resultTypeObjectIDs
             guard let batchDeleteResult = try persistentStoreCoordinator.execute(
@@ -73,7 +80,15 @@ extension NSManagedObjectContext {
         }
     }
 
-    func persistentStoreCoordinator() throws -> NSPersistentStoreCoordinator {
+    public func entity<T: NSManagedObject>(for _: T.Type) throws -> NSEntityDescription {
+        let persistentStoreCoordinator = try persistentStoreCoordinator()
+        let managedObjectModel = persistentStoreCoordinator.managedObjectModel
+        let className = String(reflecting: T.self)
+        let entity = try managedObjectModel.entity(for: className)
+        return entity
+    }
+
+    private func persistentStoreCoordinator() throws -> NSPersistentStoreCoordinator {
         enum Error: Swift.Error {
             case persistentStoreCoordinatorWasNil
         }
