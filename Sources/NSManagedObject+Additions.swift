@@ -25,11 +25,22 @@ import CoreData
 
 extension NSManagedObject {
 
-    /// This initializer has been defined so that a compiler error is generated (ambigious use of `init(context: NSManagedObjectContext)`) in the event that this initializer's identical CoreData twin is called.
+    /// This initializer has been defined so that a compiler error is
+    /// generated (ambigious use of `init(context: NSManagedObjectContext)`)
+    /// in the event that this initializer's identical CoreData twin is called.
     ///
-    /// The Apple version of this initializer does not use the passed in `context` arg to get the appropriate `NSManagedObjectModel`. Instead, it does it in such a way that `NSManagedObject.entity()` is called, which looks up to see which model should be used. If more than one model is in memory that contains the entity, it gets confused and spews warnings and errors in the console. This happens during tests when multiple `PersistentContainers` are often in memory at once due to concurrent tests.
+    /// The Apple version of this initializer does not use the passed in `context` arg to
+    /// get the appropriate `NSManagedObjectModel`. Instead, it does it in such a way
+    /// that `NSManagedObject.entity()` is called, which looks up to see which
+    /// model should be used. If more than one model is in memory that contains the entity,
+    /// it gets confused and spews warnings and errors in the console. This happens during
+    /// tests when multiple `PersistentContainers` are often in memory at once due
+    /// to concurrent tests.
     ///
-    /// When running unit tests, it is not uncommon to have the same model loaded twice: once for the core data stack running in your application and once for the in memory core data stack being used by your unit tests. When the CoreData version of this method is called, instead of
+    /// When running unit tests, it is not uncommon to have the same model loaded twice:
+    /// once for the core data stack running in your application and once for the in memory
+    /// core data stack being used by your unit tests. When the CoreData version of this
+    /// method is called, instead of
     ///
     /// why
     ///

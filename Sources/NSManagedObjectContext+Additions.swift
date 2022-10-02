@@ -36,7 +36,9 @@ extension NSManagedObjectContext {
     ///   - type: The type of `NSManagedObject` to fetch.
     ///   - block: An optional block that allows customization of the fetch request.
     ///   - fetchRequest: A fetch request that can be customized before the execution of the fetch.
-    /// - Returns: An array of `T` that meet the criteria specified by request fetched from the receiver and from the persistent stores associated with the receiver’s persistent store coordinator. If no objects match the criteria specified by request, returns an empty array.
+    /// - Returns: An array of `T` that meet the criteria specified by request fetched from the receiver
+    /// and from the persistent stores associated with the receiver’s persistent store coordinator. If no
+    /// objects match the criteria specified by request, returns an empty array.
     public func fetch<T: NSManagedObject>(
         _ type: T.Type = T.self,
         block: ((_ fetchRequest: NSFetchRequest<T>) -> Void)? = nil
