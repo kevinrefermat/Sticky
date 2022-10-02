@@ -27,12 +27,19 @@ extension NSManagedObjectModel {
     func entity(for className: String) throws -> NSEntityDescription {
         enum Error: Swift.Error {
             case modelDoesNotContainEntityWithClassName(String)
+            case modelContainsMultipleEntitiesWithClassName(String, Int)
         }
 
-        guard let entity = entities.first(where: { $0.managedObjectClassName == className }) else {
+        let matchingEntities = entities.filter { $0.managedObjectClassName == className }
+
+        if let entity = matchingEntities.first {
+            if matchingEntities.count > 1 {
+                throw Error.modelContainsMultipleEntitiesWithClassName(className, matchingEntities.count)
+            } else {
+                return entity
+            }
+        } else {
             throw Error.modelDoesNotContainEntityWithClassName(className)
         }
-
-        return entity
     }
 }
