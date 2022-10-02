@@ -38,3 +38,11 @@ protocol NSPersistentContainerProtocol: AnyObject {
 }
 
 extension NSPersistentContainer: NSPersistentContainerProtocol {}
+
+extension NSPersistentContainerProtocol {
+     func replacePersistentStoreDescriptionsWithSingleInMemoryDescription() {
+         let description = NSPersistentStoreDescription()
+         description.type = NSInMemoryStoreType
+         persistentStoreDescriptions = [description]
+     }
+ }

@@ -31,15 +31,6 @@ extension PersistentContainer {
             self.nsPersistentContainer = nsPersistentContainer
         }
 
-        public static func testDouble(name: String) -> Self {
-            return self.init(
-                nsPersistentContainer: NSPersistentContainer.preloadedInMemoryDouble(
-                    name: name,
-                    managedObjectModel: .init()
-                )
-            )
-        }
-
         public var viewContext: NSManagedObjectContext {
             return nsPersistentContainer.viewContext
         }

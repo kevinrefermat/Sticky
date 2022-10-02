@@ -41,11 +41,7 @@ class PersistentContainerTests: XCTestCase {
     }
 
     func resetSUT(inMemory: Bool = true, preloaded: Bool = false) {
-        if inMemory {
-            nsPersistentContainer.replacePersistentStoreDescriptionsWithSingleInMemoryDescription()
-        }
-
-        sut = PersistentContainer(nsPersistentContainer: nsPersistentContainerSpy)
+        sut = PersistentContainer(nsPersistentContainer: nsPersistentContainerSpy, inMemory: inMemory)
 
         guard preloaded else { return }
 
