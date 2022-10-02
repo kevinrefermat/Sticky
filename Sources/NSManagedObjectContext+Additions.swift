@@ -39,44 +39,12 @@ extension NSManagedObjectContext {
         return managedObjects
     }
 
-    public func delete<T: NSManagedObject>(_: T.Type, isDeleted: (T) -> Bool) throws {
+    public func delete<T: NSManagedObject>(_: T.Type, isDeleted: (T) -> Bool = { _ in true }) throws {
         let managedObjects = try fetch(T.self)
         managedObjects.forEach {
             if isDeleted($0) {
                 delete($0)
             }
-        }
-    }
-
-    public func deleteAllAndSave<T: NSManagedObject>(_: T.Type) throws {
-        guard let persistentStoreCoordinator = persistentStoreCoordinator else { fatalError() }
-
-        let hasInMemoryStore = persistentStoreCoordinator.persistentStores.contains(
-            where: { $0.type == NSInMemoryStoreType }
-        )
-
-        if hasInMemoryStore {
-            try delete(T.self, isDeleted: { _ in true })
-            try save()
-        } else {
-            let fetchRequest: NSFetchRequest<NSFetchRequestResult> = NSFetchRequest()
-            fetchRequest.entity = try entity(for: T.self)
-            let deleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
-            deleteRequest.resultType = .resultTypeObjectIDs
-            guard let batchDeleteResult = try persistentStoreCoordinator.execute(
-                deleteRequest,
-                with: self
-            ) as? NSBatchDeleteResult else {
-                fatalError("An executed NSBatchDeleteRequest should always have return type NSBatchDeleteResult")
-            }
-            guard let deletedObjectIDs = batchDeleteResult.result as? [NSManagedObjectID] else {
-                fatalError("""
-                The NSBatchDeleteResult from a NSBatchDeleteRequest with resultType .resultTypeObjectIDs \
-                should always have type [NSManagedObjectID]
-                """)
-            }
-            let changes: [AnyHashable: Any] = [NSDeletedObjectsKey: deletedObjectIDs]
-            NSManagedObjectContext.mergeChanges(fromRemoteContextSave: changes, into: [self])
         }
     }
 

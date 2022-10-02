@@ -209,7 +209,7 @@ class NSManagedObjectContextAdditionsSyncTests: XCTestCase {
             try performBlockOnContext { (context) in
                 let entities = try context.fetch(ExampleEntity.self)
                 XCTAssertEqual(entities.count, entityCount)
-                try context.delete(ExampleEntity.self, isDeleted: { _ in true })
+                try context.delete(ExampleEntity.self)
                 try context.save()
             }
         )
