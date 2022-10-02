@@ -44,6 +44,10 @@ extension NSManagedObjectProtocol {
 }
 
 extension NSManagedObjectProtocol where Self: NSManagedObject {
+    /// <#Description#>
+    /// - Parameters:
+    ///   - context: <#context description#>
+    ///   - presets: <#presets description#>
     @discardableResult
     public init(_ context: NSManagedObjectContext, with presets: Set<Preset<Self>> = []) throws {
         let entity = try context.entity(for: Self.self)

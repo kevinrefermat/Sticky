@@ -24,19 +24,35 @@ import Foundation
 import CoreData
 
 extension NSManagedObjectContext {
+    /// Errors specific to `NSManagedObjectContext`.
     enum Error: Swift.Error {
+        /// The context does not have an associated `NSPersistentStoreCoordinator`.
         case persistentStoreCoordinatorWasNil
+        /// The managed object model associated with the persistent store coordinate does not contain an entity with the specified class name.
         case modelDoesNotContainEntityWithClassName(String)
     }
 
-    public func perform(block: @escaping (NSManagedObjectContext) -> Void) {
+    /// Asynchronously performs the specified block on the context’s queue.
+    /// - Parameters:
+    ///   - block: The block to perform.
+    ///   - context: The current context.
+    ///
+    /// The receiving context is retained until `block` is executed.
+    public func perform(block: @escaping (_ context: NSManagedObjectContext) -> Void) {
         perform {
             block(self)
             self.reset()
         }
     }
 
-    public func performAndWait<T>(block: (NSManagedObjectContext) throws -> T) rethrows -> T {
+    /// Synchronously performs the specified block on the context’s queue.
+    /// - Parameters:
+    ///   - block: The block to perform.
+    ///   - context: The current context.
+    /// - Returns: The value returned by `block`, or `Void` if no value returned.
+    ///
+    /// Errors thrown in `block` are rethrown.
+    public func performAndWait<T>(block: (_ context: NSManagedObjectContext) throws -> T) rethrows -> T {
         let value = try executePerformAndWait(
             block: block,
             rescue: { throw $0 }
@@ -67,12 +83,26 @@ extension NSManagedObjectContext {
         }
     }
 
+    /// Creates an instance of type `T` in the context.
+    /// - Parameters:
+    ///   - type: The type to create.
+    ///   - presets: A set of preset values to apply after object creation.
+    /// - Returns: An instance of type `T` with the specified presets set.
     @discardableResult
     public func create<T: NSManagedObject>(_: T.Type, with presets: Set<Preset<T>> = []) throws -> T {
         return try T(self, with: presets)
     }
 
-    public func fetch<T: NSManagedObject>(_: T.Type, block: ((NSFetchRequest<T>) -> Void)? = nil) throws -> [T] {
+    /// Returns an array of items of the specified type that meet the fetch request’s critieria.
+    /// - Parameters:
+    ///   - type: The type of `NSManagedObject` to fetch.
+    ///   - block: An optional block that allows customization of the fetch request.
+    ///   - fetchRequest: A fetch request that can be customized before the execution of the fetch.
+    /// - Returns: An array of `T` that meet the criteria specified by request fetched from the receiver and from the persistent stores associated with the receiver’s persistent store coordinator. If no objects match the criteria specified by request, returns an empty array.
+    public func fetch<T: NSManagedObject>(
+        _ type: T.Type = T.self,
+        block: ((_ fetchRequest: NSFetchRequest<T>) -> Void)? = nil
+    ) throws -> [T] {
         let request = NSFetchRequest<T>()
         block?(request)
         request.entity = try entity(for: T.self)
@@ -80,8 +110,13 @@ extension NSManagedObjectContext {
         return managedObjects
     }
 
-    public func delete<T: NSManagedObject>(_: T.Type, isDeleted: (T) -> Bool) throws {
-        let managedObjects = try fetch(T.self)
+
+    /// Deletes objects of specified type, with an option
+    /// - Parameters:
+    ///   - type: <#type description#>
+    ///   - isDeleted: <#isDeleted description#>
+    public func delete<T: NSManagedObject>(_ type: T.Type = T.self, isDeleted: (T) -> Bool) throws {
+        let managedObjects = try fetch(type)
         managedObjects.forEach {
             if isDeleted($0) {
                 delete($0)
@@ -89,8 +124,10 @@ extension NSManagedObjectContext {
         }
     }
 
-    public func deleteAllAndSave<T: NSManagedObject>(_: T.Type) throws {
-        guard let persistentStoreCoordinator = persistentStoreCoordinator else { fatalError() }
+    public func deleteAllAndSave<T: NSManagedObject>(_ type: T.Type = T.self) throws {
+        guard let persistentStoreCoordinator = persistentStoreCoordinator else {
+            throw Error.persistentStoreCoordinatorWasNil
+        }
 
         let hasInMemoryStore = persistentStoreCoordinator.persistentStores.contains(
             where: { $0.type == NSInMemoryStoreType }
@@ -121,7 +158,12 @@ extension NSManagedObjectContext {
         }
     }
 
-    public func entity<T: NSManagedObject>(for _: T.Type) throws -> NSEntityDescription {
+    /// Returns the `NSEntityDescription` for the specified type associated with the context's managed object model.
+    /// - Parameter type: The specified type.
+    /// - Returns: The `NSEntityDescription` of the specified type according to the context's managed object model.
+    ///
+    /// There is a supplied class method
+    public func entity<T: NSManagedObject>(for type: T.Type = T.self) throws -> NSEntityDescription {
         guard let persistentStoreCoordinator = persistentStoreCoordinator else {
             throw Error.persistentStoreCoordinatorWasNil
         }
