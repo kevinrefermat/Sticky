@@ -228,7 +228,9 @@ class NSManagedObjectContextAdditionsSyncTests: XCTestCase {
 
         XCTAssertNoThrow(
             try performBlockOnContext { (context) in
-                try context.delete(ExampleEntity.self, isDeleted: { $0.uuidString == uuidA.uuidString })
+                try context.delete(ExampleEntity.self) { (request) in
+                    request.predicate = NSPredicate(format: "uuidString == %@", uuidA.uuidString)
+                }
                 try context.save()
             }
         )
