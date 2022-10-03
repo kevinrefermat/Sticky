@@ -39,13 +39,9 @@ extension NSManagedObjectContext {
         return managedObjects
     }
 
-    public func delete<T: NSManagedObject>(_: T.Type, isDeleted: (T) -> Bool = { _ in true }) throws {
-        let managedObjects = try fetch(T.self)
-        managedObjects.forEach {
-            if isDeleted($0) {
-                delete($0)
-            }
-        }
+    public func delete<T: NSManagedObject>(_: T.Type, block: ((NSFetchRequest<T>) -> Void)? = nil) throws {
+        let managedObjects = try fetch(T.self, block: block)
+        managedObjects.forEach(delete)
     }
 
     public func entity<T: NSManagedObject>(for _: T.Type) throws -> NSEntityDescription {
