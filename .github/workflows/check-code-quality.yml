@@ -1,4 +1,4 @@
-name: Swift
+name: Code Quality
 
 on:
   push:
