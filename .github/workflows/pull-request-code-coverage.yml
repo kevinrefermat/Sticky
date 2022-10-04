@@ -1,8 +1,8 @@
 name: Code Coverage
 
-on:
-  pull_request:
-    branches: [ "main" ]
+#on:
+#  pull_request:
+#    branches: [ "main" ]
 
 jobs:
   post-code-coverage:
