@@ -91,7 +91,49 @@ persistentContainer.start() { result in
 
 ## Usage
 
-### Testable
+### Enhanced `perform(block:)` and `performAndWait(block:)`
+
+#### Receiving context is passed into `block`
+
+This allows you to avoid an unnecessary declaration of `context` outside the scope of the `block`.
+
+Note: `perform(block:)` retains the receiving context until `block` returns.
+
+```swift
+contextProvider.newBackgroundContext().perform { context in
+    // use context
+}
+
+contextProvider.newBackgroundContext().performAndWait { context in
+    // use context
+}
+```
+
+#### `performAndWait(block:)` rethrows errors
+
+This matches the rethrowing behavior of [`DispatchQueue.sync()`](https://developer.apple.com/documentation/dispatch/dispatchqueue/2016081-sync).
+
+```swift
+do {
+    try contextProvider.newBackgroundContext().performAndWait { context in
+        try context.doSomethingThatThrows()
+    }
+} catch {
+    // handle errors thrown by context.doSomethingThatThrows()
+}
+```
+
+#### `performAndWait(block:)` returns the value returned by `block`
+
+This matches the return behavior of [`DispatchQueue.sync()`](https://developer.apple.com/documentation/dispatch/dispatchqueue/2016081-sync).
+
+```swift
+let bookTitles = try contextProvider.newBackgroundContext().performAndWait { context in
+    return try context.fetch(Book.self).map(\.title)
+}
+```
+
+### Testing
 
 #### For unit tests, instantiate `PersistentContainer` with `inMemory` set to `true`
 
@@ -126,50 +168,35 @@ Want to simulate a slow data migration? Create a new object that wraps `Persiste
 
 TODO: make contextprovider a protocol
 
-### Enhanced `perform(block:)` and `performAndWait(block:)`
+### Simulate a first time launch
 
-#### Receiving context is passed into `block`
+Sticky provides two ways to simulate a first time launch without actually uninstalling and reinstalling the app.
 
-This allows you to avoid an unnecessary declaration of `context` outside the scope of the `block`.
+#### Delete the persistent stores
 
-Note: `perform(block:)` retains the receiving context until `block` returns.
-
-```swift
-contextProvider.newBackgroundContext().perform { context in
-    // use context
-}
-
-contextProvider.newBackgroundContext().performAndWait { context in
-    // use context
-}
-```
-
-#### `performAndWait(block:)` rethrows errors
-
-This matches the rethrowing behavior of [`DispatchQueue.sync()`](https://developer.apple.com/documentation/dispatch/dispatchqueue/2016081-sync).
+The most straightforward way to test a fresh launch experience is to delete the underlying database and kill the app. The next time your app is launched, it will have to create a new database as if it's the first time it's launched.
 
 ```swift
-do {
-    try contextProvider.newBackgroundContext().performAndWait { context in
-        try context.doSomethingThatThrows()
-    }
-} catch {
-    // handle errors thrown by context.doSomethingThatThrows()
-}
+try persistentContainer.deleteSQLLiteStores()
 ```
 
+#### Launch the app in memory
 
-#### `performAndWait(block:)` returns the value returned by `block`
+Instead of deleting the stores on disk, you can initialize the `PersistentContainer` with the `inMemory` flag set to `true`. On initialization the `PersistentContainer` will ignore the stores on disk and will instead create and use a new store in memory. As this new store will be in memory, it will be destroyed when the app process is killed. 
 
-This matches the return behavior of [`DispatchQueue.sync()`](https://developer.apple.com/documentation/dispatch/dispatchqueue/2016081-sync).
+When you are finished testing the fresh launch experience, you can initialize the `PersistentContainer` with the `inMemory` flag set back to `false` and use your preserved on disk persistence.
 
 ```swift
-let bookTitles = try contextProvider.newBackgroundContext().performAndWait { context in
-    return try context.fetch(Book.self).map(\.title)
-}
+let persistentContainer = PersistentContainer(name: "MyDataModel", inMemory: true)
 ```
 
-### TODO: there is no Update Statically typed CRUD methods for `NSManagedObject` subclasses
+#### Practical consideration
+
+Both of the above methods are most conveniently used by building a debug setting into your build. Add a button to delete the on disk persistence and a switch to toggle `inMemory` when initializing `PersistentContainer`. 
+
+For the `inMemory` switch, the state will need to be persisted outside of Core Data (`UserDefaults` for example) so that it is guaranteed to be available to your app on next launch.
+
+### Create/Fetch/Update
 
 #### Create
 
@@ -229,31 +256,3 @@ try contextProvider.newBackgroundContext().perform { context in
     ...
 }
 ```
-
-### Simulate a first time launch
-
-Sticky provides two ways to simulate a first time launch without actually uninstalling and reinstalling the app.
-
-#### Delete the persistent stores
-
-The most straightforward way to test a fresh launch experience is to delete the underlying database and kill the app. The next time your app is launched, it will have to create a new database as if it's the first time it's launched.
-
-```swift
-try persistentContainer.deleteSQLLiteStores()
-```
-
-#### Launch the app in memory
-
-Instead of deleting the stores on disk, you can initialize the `PersistentContainer` with the `inMemory` flag set to `true`. On initialization the `PersistentContainer` will ignore the stores on disk and will instead create and use a new store in memory. As this new store will be in memory, it will be destroyed when the app process is killed. 
-
-When you are finished testing the fresh launch experience, you can initialize the `PersistentContainer` with the `inMemory` flag set back to `false` and use your preserved on disk persistence.
-
-```swift
-let persistentContainer = PersistentContainer(name: "MyDataModel", inMemory: true)
-```
-
-#### Practical consideration
-
-Both of the above methods are most conveniently used by building a debug setting into your build. Add a button to delete the on disk persistence and a switch to toggle `inMemory` when initializing `PersistentContainer`. 
-
-For the `inMemory` switch, the state will need to be persisted outside of Core Data (`UserDefaults` for example) so that it is guaranteed to be available to your app on next launch.
