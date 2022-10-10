@@ -166,8 +166,6 @@ Want to simulate a failed initialization? Create a new object that throws an err
 
 Want to simulate a slow data migration? Create a new object that wraps `PersistentContainer` and inside `start()` have it sleep for a few seconds before calling the underlying `start()`.
 
-TODO: make contextprovider a protocol
-
 ### Simulate a first time launch
 
 Sticky provides two ways to simulate a first time launch without actually uninstalling and reinstalling the app.
