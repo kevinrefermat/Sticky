@@ -55,7 +55,7 @@ Initialize your Core Data stack by calling `start()`. This will load the persist
 
 Upon success, both `start()` functions return an instance of `ContextProvider`, which is used by your app to create and access fully initialized instances of `NSManagedObjectContext`.
 
-Note: During app initialization, it can be hard to guarantee that contexts are only used after the Core Data stack is fully and successfully initialized. Sticky helps avoid this issue by exclusively providing contexts from `ContextProvider`. `ContextProvider` does not have a public initializer and is not made available to your app until `PersistentContainer` is fully and successfully initialized. In this way, Sticky statically guarantees that your app will only be able to use contexts that are ready to be accessed.
+**Note:** During app initialization, it can be hard to guarantee that contexts are only used after the Core Data stack is fully and successfully initialized. Sticky helps avoid this issue by exclusively providing contexts from `ContextProvider`. `ContextProvider` does not have a public initializer and is not made available to your app until `PersistentContainer` is fully and successfully initialized. In this way, Sticky statically guarantees that your app will only be able to use contexts that are ready to be accessed.
 
 #### Synchronous
 
@@ -93,7 +93,7 @@ persistentContainer.start() { result in
 
 Create an instance of a certain type. 
 
-Note: Core Data provides `NSManagedObject.init(context:)` to instantiate subclasses of `NSManagedObject`. However, there is an implementation detail that may cause warnings/errors when running unit tests. See this [StackOverflow question](https://stackoverflow.com/questions/51851485/multiple-nsentitydescriptions-claim-nsmanagedobject-subclass/53498777) for what the warnings/errors look like and this [answer](https://stackoverflow.com/a/53498777) to see how to safely avoid the issue. The `create()` function below uses the method outlined in the aforementioned answer to safely avoid the issue.
+**Note:** Core Data provides `NSManagedObject.init(context:)` to instantiate subclasses of `NSManagedObject`. However, there is an implementation detail that may cause warnings/errors when running unit tests. See this [StackOverflow question](https://stackoverflow.com/questions/51851485/multiple-nsentitydescriptions-claim-nsmanagedobject-subclass/53498777) for what the warnings/errors look like and this [answer](https://stackoverflow.com/a/53498777) to see how to safely avoid the issue. The `create()` function below uses the method outlined in the aforementioned answer to safely avoid the issue.
 
 ```swift
 try contextProvider.newBackgroundContext().perform { context in
@@ -154,7 +154,7 @@ try contextProvider.newBackgroundContext().perform { context in
 
 This allows you to avoid an unnecessary declaration of `context` outside the scope of the `block`.
 
-Note: `perform(block:)` retains the receiving context until `block` returns.
+**Note:** `perform(block:)` retains the receiving context until `block` returns.
 
 ```swift
 contextProvider.newBackgroundContext().perform { context in
