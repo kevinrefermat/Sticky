@@ -1,4 +1,4 @@
-    # Sticky
+# Sticky
 
 Sticky is a Core Data wrapper that simplifies several aspects of development and testing.
 
