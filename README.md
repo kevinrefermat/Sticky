@@ -1,6 +1,8 @@
-Sticky simplifies the development of a testable Core Data app and adds several convenience functions for working with `NSManagedObjectContext` and `NSManagedObject`.
+# Sticky
 
-# Installation
+Sticky simplifies development of a testable Core Data app and adds a handful of convenience functions for working with `NSManagedObjectContext` and `NSManagedObject`.
+
+## Installation
 
 ### Swift Package Manager
 
@@ -18,7 +20,7 @@ dependencies: [
 
 For more information, see the [Swift Package Manager documentation](https://github.com/apple/swift-package-manager/tree/master/Documentation).
 
-# Usage
+## Usage
 
 ### Instantiate Your Core Data Stack
 
@@ -26,7 +28,7 @@ For more information, see the [Swift Package Manager documentation](https://gith
 
 #### Basic
 
-If your project contains a single target, this method will work.
+The simplified instantiation works well if your data model is a member of your application target.
 
 ```swift
 let persistentContainer = PersistentContainer(name: "MyDataModel")
@@ -34,7 +36,7 @@ let persistentContainer = PersistentContainer(name: "MyDataModel")
 
 #### Advanced
 
-If your project contains multiple targets, it be be necessary to manually load and inject your `NSManagedObjectModel`.
+If your project contains multiple targets or your data model is a member of an external framework, it be be necessary to manually load and inject your `NSManagedObjectModel`.
 
 ```swift
 let persistentContainer = PersistentContainer(
@@ -188,7 +190,7 @@ let bookTitles = try contextProvider.newBackgroundContext().performAndWait { con
 }
 ```
 
-# Testing
+## Testing
 
 ### Fast Unit Tests
 
