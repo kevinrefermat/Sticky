@@ -217,29 +217,29 @@ let persistentContainer = PersistentContainer(
 
 ### Customizable Behavior of `PersistentContainer`
 
-Create a mock object that conforms to `PersistentContainerProtocol` to simulate edge cases in your app or behavior that is hard to replicate in the real world.
+Make your app depend on `PersistentContainerProtocol` instead of `PersistentContainer`. Then create a mock object that conforms to `PersistentContainerProtocol` to simulate edge cases in your app or behavior that is hard to replicate in the real world.
 
-Want to simulate a failed initialization? Create a mock object that conforms to `PersistentContainerProtocol` that throws an error inside `start()`.
+Want to simulate a scenario where loading the persistent stores failes? Create a mock object that conforms to `PersistentContainerProtocol` that throws an error inside `start()`.
 
-Want to simulate a slow data migration? Create a new object that wraps `PersistentContainer` and inside `start()` have it sleep for a few seconds before calling the underlying `start()`.
+Want to simulate a slow data migration? Create a new object that wraps `PersistentContainer` and inside `start()` have it sleep for a while before calling the underlying `start()`.
 
-### Simulate a first time launch
+### Simulate First Time Launch
 
 Sticky provides two ways to simulate a first time launch without actually uninstalling and reinstalling the app.
 
 #### Delete the persistent stores
 
-The most straightforward way to test a fresh launch experience is to delete the underlying database and kill the app. The next time your app is launched, it will have to create a new database as if it's the first time it's launched.
+The most straightforward way to test a first time launch experience is to delete the underlying database and kill the app. The next time your app is launched, it will have to create a new database as if it's the first time it's launched.
 
 ```swift
 try persistentContainer.deleteSQLLiteStores()
 ```
 
-#### Launch the app in memory
+#### Launch the app with in memory persistent stores
 
-Instead of deleting the stores on disk, you can initialize the `PersistentContainer` with the `inMemory` flag set to `true`. On initialization the `PersistentContainer` will ignore the stores on disk and will instead create and use a new store in memory. As this new store will be in memory, it will be destroyed when the app process is killed. 
+Instead of deleting the stores on disk, you can instantiate the `PersistentContainer` with the `inMemory` flag set to `true`. When the persistent stores are loaded the `PersistentContainer` will ignore the stores on disk and will instead create and use a new store in memory. As this new store will be in memory, it won't outlive the app process. 
 
-When you are finished testing the fresh launch experience, you can initialize the `PersistentContainer` with the `inMemory` flag set back to `false` and use your preserved on disk persistence.
+When you are finished testing the first time launch experience, you can initialize the `PersistentContainer` with the `inMemory` flag set back to `false` and use your preserved on-disk persistence.
 
 ```swift
 let persistentContainer = PersistentContainer(name: "MyDataModel", inMemory: true)
@@ -247,6 +247,6 @@ let persistentContainer = PersistentContainer(name: "MyDataModel", inMemory: tru
 
 #### Practical consideration
 
-Both of the above methods are most conveniently used by building a debug setting into your build. Add a button to delete the on disk persistence and a switch to toggle `inMemory` when initializing `PersistentContainer`. 
+Both of the above methods are most conveniently used by building a debug setting into your app. Add a button to delete the on-disk persistence and a switch to toggle `inMemory` when initializing `PersistentContainer`. 
 
-For the `inMemory` switch, the state will need to be persisted outside of Core Data (`UserDefaults` for example) so that it is guaranteed to be available to your app on next launch.
+For the `inMemory` switch, the state will need to be persisted outside of Core Data (`UserDefaults` for example) so that this state is available to your app on next launch.
