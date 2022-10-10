@@ -1,19 +1,6 @@
-<p align="center">
-    <img src="https://img.shields.io/badge/platforms-iOS%20%7C%20macOS%20%7C%20tvOS%20%7C%20watchOS%20%7C%20Linux-333333.svg" alt="Supported Platforms: iOS, macOS, tvOS, watchOS & Linux" />
-    <a href="https://github.com/apple/swift-package-manager" alt="RxSwift on Swift Package Manager" title="RxSwift on Swift Package Manager"><img src="https://img.shields.io/badge/Swift%20Package%20Manager-compatible-brightgreen.svg" /></a>
-    <img src="https://img.shields.io/badge/Swift-5.5-orange.svg" />
-    <a href="https://swift.org/package-manager">
-        <img src="https://img.shields.io/badge/swiftpm-compatible-brightgreen.svg?style=flat" alt="Swift Package Manager" />
-    </a>
-     <img src="https://img.shields.io/badge/platforms-mac+linux-brightgreen.svg?style=flat" alt="Mac + Linux" />
-    <a href="https://twitter.com/johnsundell">
-        <img src="https://img.shields.io/badge/twitter-@johnsundell-blue.svg?style=flat" alt="Twitter: @johnsundell" />
-    </a>
-</p>
+    # Sticky
 
-# Sticky
-
-Sticky is a swift package aimed at easing devlopment with Core Data.
+Sticky is a Core Data wrapper that simplifies several aspects of development and testing.
 
 TODO: table of contests
 
@@ -23,13 +10,27 @@ TODO: table of contests
 
 ### Swift Package Manager
 
-// TODO
+To install Sticky for use in an app, add Sticky to your Package Dependencies in Xcode.
+
+<!-- ![App Dependency](Assets/xcode-package-dependencies-screenshot.png?raw=true "App Dependency Screenshot") -->
+
+<img src="Assets/xcode-package-dependencies-screenshot.png" alt="App Dependency Screenshot" width="800"/>
+
+To install Sticky for use in a Swift Package Manager-powered tool, add Sticky as a dependency to your `Package.swift` file. 
+
+```swift
+dependencies: [
+    .package(url: "https://github.com/kevinrefermat/Sticky", .upToNextMajor(from: "1.0.0"))
+]
+```
+
+For more information, see the [Swift Package Manager documentation](https://github.com/apple/swift-package-manager/tree/master/Documentation).
 
 ## Setup your Core Data stack
 
 ### Instantiation
 
-Instantiate `PersistentContainer` to encapsulate your Core Data stack. This will load your data model (TODO: does it actually cause a crash if the data model is bad? Also could we defer this until start is called for simplicity?) but it will not load your persistent stores.
+`PersistentContainer` encapsulates your Core Data stack. Instantiating `PersistentContainer` will load your data model but will not load your persistent stores.
 
 #### Basic
 
@@ -64,7 +65,7 @@ Note: During app initialization, it can be hard to guarantee that contexts are o
 
 #### Synchronous
 
-The simplest way to initialize, but it blocks the calling thread.
+The synchronous `start()` function is the simplest way to initialize your `PersistentContainer`, but it blocks the calling thread.
 
 ```swift
 do {
@@ -77,9 +78,9 @@ do {
 
 #### Asynchronous
 
-This has the advantage offloading the work to a background queue, which frees up the calling thread. 
+The asynchronous `start()` function has the advantage offloading the work to a background queue, thus freeing up the calling thread. 
 
-This could be advtangageous if there were computationally expensive data migrations occuring during initialization that could block the calling thread (which is likely to be the main thread) for seconds.
+This is useful in cases where there are computationally expensive data migrations occuring during initialization that could block the calling thread (which is likely to be the main thread) for seconds.
 
 ```swift
 persistentContainer.start() { result in
