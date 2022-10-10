@@ -1,18 +1,14 @@
 # Sticky
 
-Sticky is a Core Data wrapper that simplifies several aspects of development and testing.
+Sticky simplifies the development of a testable Core Data app.
 
 TODO: table of contests
-
-# Getting Started
 
 ## Installation
 
 ### Swift Package Manager
 
 To install Sticky for use in an app, add Sticky to your Package Dependencies in Xcode.
-
-<!-- ![App Dependency](Assets/xcode-package-dependencies-screenshot.png?raw=true "App Dependency Screenshot") -->
 
 <img src="Assets/xcode-package-dependencies-screenshot.png" alt="App Dependency Screenshot" width="800"/>
 
