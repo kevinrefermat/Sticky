@@ -1,6 +1,4 @@
-Sticky simplifies the development of a testable Core Data app.
-
-TODO: table of contests
+Sticky simplifies the development of a testable Core Data app and adds several convenience functions for working with `NSManagedObjectContext` and `NSManagedObject`.
 
 # Installation
 
