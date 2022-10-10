@@ -72,7 +72,7 @@ do {
     let contextProvider = try persistentContainer.start()
     // use contextProvider to build Core Data dependent object graph
 } catch {
-    // handle error
+    ...
 }
 ```
 
@@ -88,7 +88,7 @@ persistentContainer.start() { result in
     case .success(let contextProvider):
         // use contextProvider to build Core Data dependent object graph
     case .failure(let error):
-        // handle error
+        ...
     }
 }
 ```
