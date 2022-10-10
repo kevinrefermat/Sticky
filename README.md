@@ -1,10 +1,8 @@
-# Sticky
-
 Sticky simplifies the development of a testable Core Data app.
 
 TODO: table of contests
 
-## Installation
+# Installation
 
 ### Swift Package Manager
 
@@ -22,9 +20,9 @@ dependencies: [
 
 For more information, see the [Swift Package Manager documentation](https://github.com/apple/swift-package-manager/tree/master/Documentation).
 
-## Setup your Core Data stack
+# Usage
 
-### Instantiation
+### Instantiate Your Core Data Stack
 
 `PersistentContainer` encapsulates your Core Data stack. Instantiating `PersistentContainer` will load your data model but will not load your persistent stores.
 
@@ -51,7 +49,7 @@ let persistentContainer = PersistentContainer(
 )
 ```
 
-### Initialization
+### Load Your Persistent Stores
 
 Initialize your Core Data stack by calling `start()`. This will load the persistent stores and perform any work necessary for your app to access your persisted data. There is a synchronous and asynchronous version of `start()`.
 
@@ -89,118 +87,13 @@ persistentContainer.start() { result in
 }
 ```
 
-## Usage
-
-### Enhanced `perform(block:)` and `performAndWait(block:)`
-
-#### Receiving context is passed into `block`
-
-This allows you to avoid an unnecessary declaration of `context` outside the scope of the `block`.
-
-Note: `perform(block:)` retains the receiving context until `block` returns.
-
-```swift
-contextProvider.newBackgroundContext().perform { context in
-    // use context
-}
-
-contextProvider.newBackgroundContext().performAndWait { context in
-    // use context
-}
-```
-
-#### `performAndWait(block:)` rethrows errors
-
-This matches the rethrowing behavior of [`DispatchQueue.sync()`](https://developer.apple.com/documentation/dispatch/dispatchqueue/2016081-sync).
-
-```swift
-do {
-    try contextProvider.newBackgroundContext().performAndWait { context in
-        try context.doSomethingThatThrows()
-    }
-} catch {
-    // handle errors thrown by context.doSomethingThatThrows()
-}
-```
-
-#### `performAndWait(block:)` returns the value returned by `block`
-
-This matches the return behavior of [`DispatchQueue.sync()`](https://developer.apple.com/documentation/dispatch/dispatchqueue/2016081-sync).
-
-```swift
-let bookTitles = try contextProvider.newBackgroundContext().performAndWait { context in
-    return try context.fetch(Book.self).map(\.title)
-}
-```
-
-### Testing
-
-#### For unit tests, instantiate `PersistentContainer` with `inMemory` set to `true`
-
-Running your tests with an in memory store makes them run faster. It also ensures that your test environment does not have persisted state from previous runs.
-
-```swift
-let persistentContainer = PersistentContainer(
-    name: "MyDataModel", 
-    inMemory: true
-)
-```
-
-```swift
-let persistentContainer = PersistentContainer(
-    name: "MyDataModel",
-    managedObjectModel: .mergedModel(
-        from: [
-            Bundle(for: type(of: self))
-        ]
-    ),
-    inMemory: true
-)
-```
-
-#### Mock `PersistentContainer` to customize behavior for tests
-
-Create a mock object that conforms to `PersistentContainerProtocol` to simulate edge cases or behavior that is hard to replicate in the real world.
-
-Want to simulate a failed initialization? Create a new object that throws an error inside `start()`.
-
-Want to simulate a slow data migration? Create a new object that wraps `PersistentContainer` and inside `start()` have it sleep for a few seconds before calling the underlying `start()`.
-
-### Simulate a first time launch
-
-Sticky provides two ways to simulate a first time launch without actually uninstalling and reinstalling the app.
-
-#### Delete the persistent stores
-
-The most straightforward way to test a fresh launch experience is to delete the underlying database and kill the app. The next time your app is launched, it will have to create a new database as if it's the first time it's launched.
-
-```swift
-try persistentContainer.deleteSQLLiteStores()
-```
-
-#### Launch the app in memory
-
-Instead of deleting the stores on disk, you can initialize the `PersistentContainer` with the `inMemory` flag set to `true`. On initialization the `PersistentContainer` will ignore the stores on disk and will instead create and use a new store in memory. As this new store will be in memory, it will be destroyed when the app process is killed. 
-
-When you are finished testing the fresh launch experience, you can initialize the `PersistentContainer` with the `inMemory` flag set back to `false` and use your preserved on disk persistence.
-
-```swift
-let persistentContainer = PersistentContainer(name: "MyDataModel", inMemory: true)
-```
-
-#### Practical consideration
-
-Both of the above methods are most conveniently used by building a debug setting into your build. Add a button to delete the on disk persistence and a switch to toggle `inMemory` when initializing `PersistentContainer`. 
-
-For the `inMemory` switch, the state will need to be persisted outside of Core Data (`UserDefaults` for example) so that it is guaranteed to be available to your app on next launch.
-
 ### Create/Fetch/Update
 
 #### Create
 
 Create an instance of a certain type. 
 
-Note: Core Data provides `NSManagedObject.init(context:)` to instantiate subclasses of `NSManagedObject`. However, there is an implementation detail that may cause warnings/errors when running unit tests. See this [StackOverflow question](https://stackoverflow.com/questions/51851485/multiple-nsentitydescriptions-claim-nsmanagedobject-subclass/53498777) for what the warnings/errors look like and this [answer](https://stackoverflow.com/a/53498777) to see how to safely avoid the issue. The `create()` function below uses the method outlined in the [answer](https://stackoverflow.com/a/53498777) to safely avoid the issue.
+Note: Core Data provides `NSManagedObject.init(context:)` to instantiate subclasses of `NSManagedObject`. However, there is an implementation detail that may cause warnings/errors when running unit tests. See this [StackOverflow question](https://stackoverflow.com/questions/51851485/multiple-nsentitydescriptions-claim-nsmanagedobject-subclass/53498777) for what the warnings/errors look like and this [answer](https://stackoverflow.com/a/53498777) to see how to safely avoid the issue. The `create()` function below uses the method outlined in the aforementioned answer to safely avoid the issue.
 
 ```swift
 try contextProvider.newBackgroundContext().perform { context in
@@ -254,3 +147,106 @@ try contextProvider.newBackgroundContext().perform { context in
     ...
 }
 ```
+
+### Enhanced `perform(block:)` and `performAndWait(block:)`
+
+#### Receiving context is passed into `block`
+
+This allows you to avoid an unnecessary declaration of `context` outside the scope of the `block`.
+
+Note: `perform(block:)` retains the receiving context until `block` returns.
+
+```swift
+contextProvider.newBackgroundContext().perform { context in
+    ...
+}
+
+contextProvider.newBackgroundContext().performAndWait { context in
+    ...
+}
+```
+
+#### `performAndWait(block:)` rethrows errors
+
+This matches the rethrowing behavior of [`DispatchQueue.sync()`](https://developer.apple.com/documentation/dispatch/dispatchqueue/2016081-sync).
+
+```swift
+do {
+    try contextProvider.newBackgroundContext().performAndWait { context in
+        try context.doSomethingThatThrows()
+    }
+} catch {
+    // handle errors thrown by context.doSomethingThatThrows()
+}
+```
+
+#### `performAndWait(block:)` returns the value returned by `block`
+
+This matches the return behavior of [`DispatchQueue.sync()`](https://developer.apple.com/documentation/dispatch/dispatchqueue/2016081-sync).
+
+```swift
+let bookTitles = try contextProvider.newBackgroundContext().performAndWait { context in
+    return try context.fetch(Book.self).map(\.title)
+}
+```
+
+# Testing
+
+### Fast Unit Tests
+
+Instantiate `PersistentContainer` with `inMemory` set to `true` to make your Core Data tests run as fast as possible. This also ensures that your tests run in an isolated environment without any persisted state from previous runs.
+
+```swift
+let persistentContainer = PersistentContainer(
+    name: "MyDataModel", 
+    inMemory: true
+)
+```
+
+```swift
+let persistentContainer = PersistentContainer(
+    name: "MyDataModel",
+    managedObjectModel: .mergedModel(
+        from: [
+            Bundle(for: type(of: self))
+        ]
+    ),
+    inMemory: true
+)
+```
+
+### Customizable Behavior of `PersistentContainer`
+
+Create a mock object that conforms to `PersistentContainerProtocol` to simulate edge cases in your app or behavior that is hard to replicate in the real world.
+
+Want to simulate a failed initialization? Create a mock object that conforms to `PersistentContainerProtocol` that throws an error inside `start()`.
+
+Want to simulate a slow data migration? Create a new object that wraps `PersistentContainer` and inside `start()` have it sleep for a few seconds before calling the underlying `start()`.
+
+### Simulate a first time launch
+
+Sticky provides two ways to simulate a first time launch without actually uninstalling and reinstalling the app.
+
+#### Delete the persistent stores
+
+The most straightforward way to test a fresh launch experience is to delete the underlying database and kill the app. The next time your app is launched, it will have to create a new database as if it's the first time it's launched.
+
+```swift
+try persistentContainer.deleteSQLLiteStores()
+```
+
+#### Launch the app in memory
+
+Instead of deleting the stores on disk, you can initialize the `PersistentContainer` with the `inMemory` flag set to `true`. On initialization the `PersistentContainer` will ignore the stores on disk and will instead create and use a new store in memory. As this new store will be in memory, it will be destroyed when the app process is killed. 
+
+When you are finished testing the fresh launch experience, you can initialize the `PersistentContainer` with the `inMemory` flag set back to `false` and use your preserved on disk persistence.
+
+```swift
+let persistentContainer = PersistentContainer(name: "MyDataModel", inMemory: true)
+```
+
+#### Practical consideration
+
+Both of the above methods are most conveniently used by building a debug setting into your build. Add a button to delete the on disk persistence and a switch to toggle `inMemory` when initializing `PersistentContainer`. 
+
+For the `inMemory` switch, the state will need to be persisted outside of Core Data (`UserDefaults` for example) so that it is guaranteed to be available to your app on next launch.
