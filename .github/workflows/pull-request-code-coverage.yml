@@ -44,7 +44,7 @@ jobs:
 
 
     - name: Add fake report
-      run: mkdir coverage && echo '{"total":{"statements":{"pct":99}}}' > coverage/coverage-summary.json && cat coverage/coverage-summary.json
+      run: mkdir -p coverage && echo '{"total":{"statements":{"pct":99}}}' > coverage/coverage-summary.json && cat coverage/coverage-summary.json
 
     # - name: Set DEBUG flag
     #   run: DEBUG=check-code-coverage
