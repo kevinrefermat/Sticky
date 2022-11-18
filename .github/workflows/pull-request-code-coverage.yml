@@ -1,4 +1,4 @@
-name: Code Coverage
+name: CC
 
 on:
  pull_request:
