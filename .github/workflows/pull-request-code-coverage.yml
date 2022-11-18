@@ -20,12 +20,20 @@ jobs:
       with:
         output-file: ./coverage/lcov.info
 
-    - name: Post coverage report
-      uses: romeovs/lcov-reporter-action@v0.2.16
-      with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-        lcov-file: ./coverage/lcov.info
-        delete-old-comments: true
+    - name: Set code coverage commit status # You would run your tests before this using the output to set state/desc
+      uses: Sibz/github-status-action@v1
+      with: 
+        authToken: ${{ secrets.GITHUB_TOKEN }}
+        context: 'Code Coverage'
+        description: '420%'
+        state: 'success'
+        sha: ${{ github.event.pull_request.head.sha || github.sha }}
+
+    # - name: Post coverage report
+    #   uses: romeovs/lcov-reporter-action@v0.2.16
+    #   with:
+    #     github-token: ${{ secrets.GITHUB_TOKEN }}
+    #     lcov-file: ./coverage/lcov.info
     
     # - name: Install NPM package check-code-coverage
     #   run: npm install --global check-code-coverage
