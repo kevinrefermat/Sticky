@@ -46,6 +46,9 @@ jobs:
     - name: Add fake report
       run: mkdir coverage && echo '{"total":{"statements":{"pct":99}}}' > coverage/coverage-summary.json && cat coverage/coverage-summary.json
 
+    - name: Set DEBUG flag
+      run: DEBUG=*
+
     - name: Set code coverage commit status
       run: npx -p check-code-coverage set-gh-status
       env:
