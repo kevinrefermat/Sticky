@@ -15,24 +15,25 @@ jobs:
     - name: Run tests to generate code coverage
       run: swift test --enable-code-coverage
 
-    # - name: Generate coverage report
-    #   uses: maxep/spm-lcov-action@0.3.1
-    #   with:
-    #     output-file: ./coverage/lcov.info
+    - name: Generate coverage report
+      uses: maxep/spm-lcov-action@0.3.1
+      with:
+        output-file: ./coverage/lcov.info
 
-    # - name: Post coverage report
-    #   uses: romeovs/lcov-reporter-action@v0.2.16
-    #   with:
-    #     github-token: ${{ secrets.GITHUB_TOKEN }}
-    #     lcov-file: ./coverage/lcov.info
+    - name: Post coverage report
+      uses: romeovs/lcov-reporter-action@v0.2.16
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        lcov-file: ./coverage/lcov.info
+        delete-old-comments: true
     
     # - name: Install NPM package check-code-coverage
     #   run: npm install --global check-code-coverage
 
-    - name: Move coverage file
-      run: mkdir coverage && mv $(swift test --show-codecov-path) coverage/coverage-summary.json
+    # - name: Move coverage file
+    #   run: mkdir coverage && mv $(swift test --show-codecov-path) coverage/coverage-summary.json
 
-    - name: Set code coverage commit status
-      run: npx -p check-code-coverage set-gh-status
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    # - name: Set code coverage commit status
+    #   run: npx -p check-code-coverage set-gh-status
+    #   env:
+    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
