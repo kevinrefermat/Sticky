@@ -1,4 +1,4 @@
-name: CC
+name: Code Coverage
 
 on:
  pull_request:
@@ -8,17 +8,17 @@ jobs:
   set-github-status:
     runs-on: macos-latest
     steps:
-    # - name: Install llvm
-    #   run: brew install llvm
-    # - name: Checkout the code
-    #   uses: actions/checkout@v3
-    # - name: Run tests to generate code coverage
-    #   run: swift test --enable-code-coverage
+    - name: Install llvm
+      run: brew install llvm
+    - name: Checkout the code
+      uses: actions/checkout@v3
+    - name: Run tests to generate code coverage
+      run: swift test --enable-code-coverage
 
-    # - name: Generate coverage report
-    #   uses: maxep/spm-lcov-action@0.3.1
-    #   with:
-    #     output-file: ./coverage/lcov.info
+    - name: Generate coverage report
+      uses: maxep/spm-lcov-action@0.3.1
+      with:
+        output-file: ./coverage/lcov.info
 
     # - name: Set code coverage commit status # You would run your tests before this using the output to set state/desc
     #   uses: Sibz/github-status-action@v1
@@ -46,7 +46,10 @@ jobs:
     - name: Add fake report
       run: mkdir coverage && echo '{"total":{"statements":{"pct":99}}}' > coverage/coverage-summary.json && cat coverage/coverage-summary.json
 
+    # - name: Set DEBUG flag
+    #   run: DEBUG=check-code-coverage
+
     - name: Set code coverage commit status
-      run: DEBUG=check-code-coverage && npx -p check-code-coverage set-gh-status
+      run: npx -p check-code-coverage set-gh-status
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
