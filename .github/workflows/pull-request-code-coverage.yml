@@ -26,10 +26,10 @@ jobs:
     #     github-token: ${{ secrets.GITHUB_TOKEN }}
     #     lcov-file: ./coverage/lcov.info
     
-    - name: Install NPM package check-code-coverage
-      run: npm install --global check-code-coverage
+    # - name: Install NPM package check-code-coverage
+    #   run: npm install --global check-code-coverage
 
     - name: Set code coverage commit status
-      run: npx -p check-code-coverage set-gh-status
+      run: npx -p check-code-coverage set-gh-status --from $(swift test --show-codecov-path)
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
