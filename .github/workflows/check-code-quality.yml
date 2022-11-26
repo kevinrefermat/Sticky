@@ -25,17 +25,17 @@ jobs:
     steps:
     - name: Checkout the code
       uses: actions/checkout@v3
-    - name: Show eligible build destinations for Sticky
-      run: xcodebuild -showdestinations -scheme Sticky
-    - name: Build and test on Mac - x86_64 (latest macOS)
-      run: xcodebuild test -scheme Sticky -destination 'platform=macOS,arch=x86_64,id=4203018E-580F-C1B5-9525-B745CECA79EB' SWIFT_TREAT_WARNINGS_AS_ERRORS=YES
-    - name: Build and test on Mac Catalytst - x86_64 (latest macOS)
-      run: xcodebuild test -scheme Sticky -destination 'platform=macOS,arch=x86_64,variant=Mac Catalyst,id=4203018E-580F-C1B5-9525-B745CECA79EB' SWIFT_TREAT_WARNINGS_AS_ERRORS=YES
-    - name: Build and test on Apple TV 4K - 2nd generation (latest tvOS)
-      run: xcodebuild test -scheme Sticky -destination 'platform=tvOS Simulator,name=Apple TV 4K (2nd generation)' SWIFT_TREAT_WARNINGS_AS_ERRORS=YES
-    - name: Build and test on Apple Watch Ultra - 49mm (latest watchOS)
-      run: xcodebuild test -scheme Sticky -destination 'platform=watchOS Simulator,name=Apple Watch Ultra (49mm)' SWIFT_TREAT_WARNINGS_AS_ERRORS=YES
-    - name: Build and test on iPad Pro - 12.9-inch - 5th generation (latest iPadOS)
-      run: xcodebuild test -scheme Sticky -destination 'platform=iOS Simulator,name=iPad Pro (12.9-inch) (5th generation)' SWIFT_TREAT_WARNINGS_AS_ERRORS=YES
-    - name: Build and test on iPhone 14 Pro Max (latest iOS)
-      run: xcodebuild test -scheme Sticky -destination 'platform=iOS Simulator,name=iPhone 14 Pro Max' SWIFT_TREAT_WARNINGS_AS_ERRORS=YES
+    # - name: Show eligible build destinations for Sticky
+    #   run: xcodebuild -showdestinations -scheme Sticky
+    # - name: Build and test on Mac - x86_64 (latest macOS)
+    #   run: xcodebuild test -scheme Sticky -destination 'platform=macOS,arch=x86_64,id=4203018E-580F-C1B5-9525-B745CECA79EB' SWIFT_TREAT_WARNINGS_AS_ERRORS=YES
+    # - name: Build and test on Mac Catalytst - x86_64 (latest macOS)
+    #   run: xcodebuild test -scheme Sticky -destination 'platform=macOS,arch=x86_64,variant=Mac Catalyst,id=4203018E-580F-C1B5-9525-B745CECA79EB' SWIFT_TREAT_WARNINGS_AS_ERRORS=YES
+    # - name: Build and test on Apple TV 4K - 2nd generation (latest tvOS)
+    #   run: xcodebuild test -scheme Sticky -destination 'platform=tvOS Simulator,name=Apple TV 4K (2nd generation)' SWIFT_TREAT_WARNINGS_AS_ERRORS=YES
+    # - name: Build and test on Apple Watch Ultra - 49mm (latest watchOS)
+    #   run: xcodebuild test -scheme Sticky -destination 'platform=watchOS Simulator,name=Apple Watch Ultra (49mm)' SWIFT_TREAT_WARNINGS_AS_ERRORS=YES
+    # - name: Build and test on iPad Pro - 12.9-inch - 5th generation (latest iPadOS)
+    #   run: xcodebuild test -scheme Sticky -destination 'platform=iOS Simulator,name=iPad Pro (12.9-inch) (5th generation)' SWIFT_TREAT_WARNINGS_AS_ERRORS=YES
+    # - name: Build and test on iPhone 14 Pro Max (latest iOS)
+    #   run: xcodebuild test -scheme Sticky -destination 'platform=iOS Simulator,name=iPhone 14 Pro Max' SWIFT_TREAT_WARNINGS_AS_ERRORS=YES
