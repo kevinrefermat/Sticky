@@ -52,4 +52,5 @@ jobs:
     - name: Set code coverage commit status
       run: npx -p check-code-coverage set-gh-status
       env:
+        DEBUG: check-code-coverage
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
