@@ -150,7 +150,7 @@ try contextProvider.newBackgroundContext().perform { context in
 
 ### Enhanced `perform(block:)` and `performAndWait(block:)`
 
-#### Receiving context is passed into `block`
+#### `NSManagedObjectContext` is passed into `block`
 
 This allows you to avoid an unnecessary declaration of `context` outside the scope of the `block`.
 
