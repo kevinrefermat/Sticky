@@ -87,7 +87,7 @@ persistentContainer.start() { result in
 }
 ```
 
-### Create/Fetch/Update
+### CRUD Functions
 
 #### Create
 
