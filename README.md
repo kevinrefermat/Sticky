@@ -215,14 +215,6 @@ let persistentContainer = PersistentContainer(
 )
 ```
 
-### Customizable Behavior of `PersistentContainer`
-
-Make your app depend on `PersistentContainerProtocol` instead of `PersistentContainer`. Then create a mock object that conforms to `PersistentContainerProtocol` to simulate edge cases in your app or behavior that is hard to replicate in the real world.
-
-Want to simulate a scenario where loading the persistent stores failes? Create a mock object that conforms to `PersistentContainerProtocol` that throws an error inside `start()`.
-
-Want to simulate a slow data migration? Create a new object that wraps `PersistentContainer` and inside `start()` have it sleep for a while before calling the underlying `start()`.
-
 ### Simulate First Time Launch
 
 Sticky provides two ways to simulate a first time launch without actually uninstalling and reinstalling the app.
@@ -250,3 +242,11 @@ let persistentContainer = PersistentContainer(name: "MyDataModel", inMemory: tru
 Both of the above methods are most conveniently used by building a debug setting into your app. Add a button to delete the on-disk persistence and a switch to toggle `inMemory` when initializing `PersistentContainer`. 
 
 For the `inMemory` switch, the state will need to be persisted outside of Core Data (`UserDefaults` for example) so that this state is available to your app on next launch.
+
+### Customizable Behavior of `PersistentContainer`
+
+Make your app depend on `PersistentContainerProtocol` instead of `PersistentContainer`. Then create a mock object that conforms to `PersistentContainerProtocol` to simulate edge cases in your app or behavior that is hard to replicate in the real world.
+
+Want to simulate a scenario where loading the persistent stores failes? Create a mock object that conforms to `PersistentContainerProtocol` that throws an error inside `start()`.
+
+Want to simulate a slow data migration? Create a new object that wraps `PersistentContainer` and inside `start()` have it sleep for a while before calling the underlying `start()`.
