@@ -59,7 +59,7 @@ Upon success, both `start()` functions return an instance of `ContextProvider`, 
 
 #### Synchronous
 
-The synchronous `start()` function is the simplest way to initialize your `PersistentContainer`, but it blocks the calling thread.
+The synchronous `start()` function is the simplest way to initialize your `PersistentContainer`.
 
 ```swift
 do {
