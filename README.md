@@ -36,7 +36,7 @@ let persistentContainer = PersistentContainer(name: "MyDataModel")
 
 #### Advanced
 
-If your project contains multiple targets or your data model is a member of an external framework, it be be necessary to manually load and inject your `NSManagedObjectModel`.
+If your project contains multiple targets or your data model is a member of an external framework, it may be necessary to manually load and inject your `NSManagedObjectModel`.
 
 ```swift
 let persistentContainer = PersistentContainer(
