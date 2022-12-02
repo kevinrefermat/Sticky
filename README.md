@@ -74,7 +74,7 @@ do {
 
 The asynchronous `start()` function has the advantage offloading the work to a background queue, thus freeing up the calling thread. 
 
-This is useful in cases where there are computationally expensive data migrations occuring during initialization that could block the calling thread (which is likely to be the main thread) for seconds.
+This could be useful in cases where there is computationally expensive work to be done, such as a database migration, that you don't want to block the main queue for.
 
 ```swift
 persistentContainer.start() { result in
