@@ -1,6 +1,6 @@
 # Sticky
 
-Sticky simplifies development of a testable Core Data app and adds a handful of convenience functions for working with `NSManagedObjectContext` and `NSManagedObject`.
+Sticky makes building your app on Core Data easier. It provides an enhanced `PersistentContainer` that makes testing simpler, statically typed CRUD functions for `NSManagedObject`, and Swifty ways of accessing and working with `NSManagedObjectContext`.
 
 ## Installation
 
