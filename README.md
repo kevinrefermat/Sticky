@@ -152,7 +152,7 @@ try contextProvider.newBackgroundContext().perform { context in
 
 #### `NSManagedObjectContext` is passed into `block`
 
-This allows you to avoid an unnecessary declaration of `context` outside the scope of the `block`.
+This allows you to avoid an unnecessary declaration of `context` outside the scope of `block`.
 
 **Note:** `perform(block:)` retains the receiving context until `block` returns.
 
