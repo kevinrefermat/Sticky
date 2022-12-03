@@ -33,7 +33,7 @@ jobs:
         reporttypes: Html;Badges
     - name: Commit Coverage Files
       run: |
-        git push origin --delete main-code-coverage
+        git push origin --delete main-code-coverage || echo "origin/main-code-coverage does not exist"
         git checkout -b main-code-coverage
         git add ./coverage
         git commit -m "added coverage report"
