@@ -36,8 +36,10 @@ jobs:
 
     - name: Commit Coverage Report
       run: |
-        git fetch
+        git stash
+        git fetch origin code-coverage
         git checkout coverage-report
+        git stash pop
         git add ./coverage
-        git commit -m "added coverage report"
+        git commit -m "updated coverage report"
         git push
