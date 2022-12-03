@@ -1,4 +1,6 @@
-# Sticky
+# Sticky 
+
+![Line Coverage](https://raw.githubusercontent.com/kevinrefermat/Sticky/code-coverage/coverage/badge_shieldsio_linecoverage_brightgreen.svg)
 
 Sticky makes building your app on Core Data easier. It provides an enhanced `PersistentContainer` that makes testing simpler, statically typed CRUD functions for `NSManagedObject`, and Swifty ways of accessing and working with `NSManagedObjectContext`.
 
