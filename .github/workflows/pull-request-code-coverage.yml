@@ -20,10 +20,19 @@ jobs:
       uses: maxep/spm-lcov-action@0.3.1
       with:
         output-file: ./coverage/lcov.info
-    - name: Commit Coverage Report
-      run: git checkout -b coverage-report && git add ./coverage && git commit -am "added coverage report" && git push -u origin coverage-report
-    - name: Post coverage report
-      uses: romeovs/lcov-reporter-action@v0.2.16
+
+    - name: Setup .NET Core # Required to execute ReportGenerator
+      uses: actions/setup-dotnet@v3
       with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-        lcov-file: ./coverage/lcov.info
+        dotnet-version: 6.x
+        dotnet-quality: 'ga'
+
+    - name: ReportGenerator
+      uses: danielpalme/ReportGenerator-GitHub-Action@5.1.12
+      with:
+        reports: coverage/lcov.info
+        targetdir: coverage
+        reporttypes: Html;Badges
+
+    - name: Commit Coverage Report
+      run: get fetch && git branch -D coverage-report && git checkout -b coverage-report && git add ./coverage && git commit -m "added coverage report" && git push -u origin coverage-report
