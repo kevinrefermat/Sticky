@@ -53,8 +53,8 @@ jobs:
       run: |
         pwd
         git status
-        git push origin --delete code-coverage
-        git checkout -b code-coverage
+        git push origin --delete main-code-coverage
+        git checkout -b main-code-coverage
         git add ./coverage
-        git commit -m "updated coverage report"
-        git push -u origin code-coverage
+        git commit -m "added coverage report"
+        git push -u origin main-code-coverage
