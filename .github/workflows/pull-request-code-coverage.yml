@@ -35,4 +35,9 @@ jobs:
         reporttypes: Html;Badges
 
     - name: Commit Coverage Report
-      run: get fetch && git branch -D coverage-report && git checkout -b coverage-report && git add ./coverage && git commit -m "added coverage report" && git push -u origin coverage-report
+      run: |
+        git fetch
+        git checkout coverage-report
+        git add ./coverage
+        git commit -m "added coverage report"
+        git push
