@@ -43,7 +43,7 @@ jobs:
         reports: coverage/lcov.info
         targetdir: coverage
         reporttypes: Html;Badges
-        
+
     - name: debug
       run: |
         pwd
@@ -53,10 +53,8 @@ jobs:
       run: |
         pwd
         git status
-        git stash
-        git fetch origin code-coverage
-        git checkout coverage-report
-        git stash pop
+        git push origin --delete code-coverage
+        git checkout -b code-coverage
         git add ./coverage
-        git commit -m "updatedme coverage report"
-        git push
+        git commit -m "updated coverage report"
+        git push -u origin code-coverage
