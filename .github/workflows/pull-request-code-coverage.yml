@@ -21,7 +21,7 @@ jobs:
       with:
         output-file: ./coverage/lcov.info
     - name: Commit Coverage Report
-      run: git checkout -b coverage-report && git add ./coverage && git commit -am "added coverage report"
+      run: git checkout -b coverage-report && git add ./coverage && git commit -am "added coverage report" && git push -u origin coverage-report
     - name: Post coverage report
       uses: romeovs/lcov-reporter-action@v0.2.16
       with:
